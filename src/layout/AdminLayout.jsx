@@ -1,0 +1,50 @@
+import React, { useState } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { LayoutDashboard, FileText, Map, ShieldAlert, Settings } from 'lucide-react';
+import Sidebar from '../components/common/Sidebar';
+import TopHeader from '../components/common/TopHeader';
+
+const adminLinks = [
+  { path: '/admin', label: 'Dashboard Analítico', icon: LayoutDashboard, exact: true },
+  { path: '/admin/reports', label: 'Gestión de Reportes', icon: FileText, exact: false },
+  { path: '/admin/map', label: 'Mapa de Monitoreo', icon: Map, exact: false },
+  { path: '/admin/alerts', label: 'Alertas Críticas', icon: ShieldAlert, exact: false },
+  { path: '/admin/settings', label: 'Configuración Sistema', icon: Settings, exact: false },
+];
+
+const pageTitles = {
+  '/admin': 'Dashboard Analítico',
+  '/admin/reports': 'Gestión de Emergencias',
+  '/admin/map': 'Monitoreo en Tiempo Real',
+  '/admin/alerts': 'Alertas Críticas',
+  '/admin/settings': 'Configuración del Sistema',
+};
+
+const AdminLayout = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
+
+  const getTitle = () => pageTitles[location.pathname] || 'Administración UrbanShield';
+
+  return (
+    <div className="flex h-screen bg-primary-bg overflow-hidden" style={{ fontFamily: 'Inter, Poppins, sans-serif' }}>
+      <Sidebar
+        links={adminLinks}
+        isOpen={isSidebarOpen}
+        setIsOpen={setIsSidebarOpen}
+      />
+
+      <div className="flex-1 flex flex-col lg:pl-64 min-w-0 transition-all duration-300">
+        <TopHeader onMenuClick={() => setIsSidebarOpen(true)} title={getTitle()} />
+
+        {/* Map gets no padding, all others get full padding */}
+        <main className={`flex-1 overflow-y-auto ${location.pathname === '/admin/map' ? '' : 'p-4 sm:p-6 lg:p-8'}`}>
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default AdminLayout;
+
