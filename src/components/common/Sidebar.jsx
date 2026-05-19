@@ -2,8 +2,11 @@ import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { Shield, LogOut, X } from 'lucide-react';
 import { clsx } from 'clsx';
+import { useNotifications } from '../../context/NotificationContext';
 
-const Sidebar = ({ links, isOpen, setIsOpen }) => (
+const Sidebar = ({ links, isOpen, setIsOpen }) => {
+  const { unreadCount } = useNotifications();
+  return (
   <>
     {/* Mobile overlay */}
     {isOpen && (
@@ -52,23 +55,31 @@ const Sidebar = ({ links, isOpen, setIsOpen }) => (
           Navegación
         </p>
         <ul className="space-y-0.5">
-          {links.map((link) => (
-            <li key={link.path}>
-              <NavLink
-                to={link.path}
-                end={link.exact}
-                className={({ isActive }) => clsx(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150",
-                  isActive
-                    ? "nav-active"
-                    : "text-sidebar-muted hover:bg-white/10 hover:text-white"
-                )}
-              >
-                <link.icon style={{ width: '18px', height: '18px', flexShrink: 0 }} />
-                <span>{link.label}</span>
-              </NavLink>
-            </li>
-          ))}
+          {links.map((link) => {
+            const isNotifications = link.path.includes('notification');
+            return (
+              <li key={link.path}>
+                <NavLink
+                  to={link.path}
+                  end={link.exact}
+                  className={({ isActive }) => clsx(
+                    "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150",
+                    isActive
+                      ? "nav-active"
+                      : "text-sidebar-muted hover:bg-white/10 hover:text-white"
+                  )}
+                >
+                  <link.icon style={{ width: '18px', height: '18px', flexShrink: 0 }} />
+                  <span className="flex-1">{link.label}</span>
+                  {isNotifications && unreadCount > 0 && (
+                    <span className="h-5 min-w-[20px] px-1 bg-danger rounded-full text-[10px] text-white flex items-center justify-center font-bold">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
+                </NavLink>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
@@ -100,6 +111,7 @@ const Sidebar = ({ links, isOpen, setIsOpen }) => (
       </div>
     </aside>
   </>
-);
+  );
+};
 
 export default Sidebar;

@@ -1,18 +1,44 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Shield, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+import { useAuth, getApiErrorMessage } from '../../context/AuthContext';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login, isAuthenticated, user } = useAuth();
   const [showPwd, setShowPwd] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+  const [form, setForm] = React.useState({ email: '', password: '' });
 
-  const handleLogin = (e) => {
+  React.useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate(user.role === 'admin' ? '/admin' : '/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, user, navigate]);
+
+  const handleChange = (e) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setError('');
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => navigate('/dashboard'), 1000);
+    setError('');
+    try {
+      const loggedUser = await login(form);
+      const from = location.state?.from?.pathname;
+      if (from && from !== '/login') navigate(from, { replace: true });
+      else navigate(loggedUser.role === 'admin' ? '/admin' : '/dashboard', { replace: true });
+    } catch (err) {
+      setError(getApiErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -76,9 +102,16 @@ const LoginPage = () => {
             <p className="text-text-secondary text-sm mt-2">Ingresa a tu cuenta para continuar</p>
           </div>
 
+          {error && (
+            <p className="mb-4 text-sm text-danger bg-danger/10 border border-danger/20 rounded-xl px-3 py-2">{error}</p>
+          )}
+
           <form onSubmit={handleLogin} className="space-y-4">
-            <Input label="Correo Electrónico" type="email" placeholder="tu@email.com" required leftIcon={<Mail className="h-4 w-4" />} />
+            <Input name="email" value={form.email} onChange={handleChange} label="Correo Electrónico" type="email" placeholder="tu@email.com" required leftIcon={<Mail className="h-4 w-4" />} />
             <Input
+              name="password"
+              value={form.password}
+              onChange={handleChange}
               label="Contraseña"
               type={showPwd ? 'text' : 'password'}
               placeholder="••••••••"
@@ -104,19 +137,8 @@ const LoginPage = () => {
             </Button>
           </form>
 
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
-            <div className="relative flex justify-center">
-              <span className="px-3 text-xs text-text-muted bg-primary-bg">o también</span>
-            </div>
-          </div>
-
-          <Button type="button" variant="muted" className="w-full" size="md"
-            onClick={() => { setIsLoading(true); setTimeout(() => navigate('/admin'), 800); }}>
-            Entrar como Administrador (Demo)
-          </Button>
-
-          <p className="mt-8 text-center text-sm text-text-secondary">
+          
+<p className="mt-8 text-center text-sm text-text-secondary">
             ¿No tienes cuenta?{' '}
             <Link to="/register" className="text-primary hover:text-primary-dark font-medium transition-colors">Regístrate gratis</Link>
           </p>

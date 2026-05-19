@@ -1,39 +1,86 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import {
-  ArrowLeft, MapPin, Clock, Calendar, AlertTriangle, ShieldCheck,
-  CheckCircle, Radio, Image as ImageIcon
-} from 'lucide-react';
+import { ArrowLeft, MapPin, Clock, AlertTriangle, Image as ImageIcon, Calendar, Radio, ShieldCheck, CheckCircle } from 'lucide-react';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
-
-const timelineSteps = [
-  { id: 1, time: '14:30', title: 'Reporte creado', desc: 'Ciudadano envió el reporte al sistema.', type: 'user', done: true },
-  { id: 2, time: '14:32', title: 'Recibido por Control', desc: 'Centro de Control analizó el reporte y validó la ubicación.', type: 'system', done: true },
-  { id: 3, time: '14:35', title: 'Unidad despachada', desc: 'Unidad de Bomberos B-14 despachada a la ubicación GPS.', type: 'action', done: true },
-  { id: 4, time: '14:45', title: 'En el lugar', desc: 'Unidad confirmó arribo. Labores de contención iniciadas.', type: 'update', done: true },
-  { id: 5, time: '—', title: 'Resolución pendiente', desc: 'Esperando confirmación de cierre del incidente.', type: 'pending', done: false },
-];
+import { getReport } from '../../services/reportsApi';
+import { useAsyncData } from '../../hooks/useAsyncData';
+import {
+  formatDate,
+  getCategoryMeta,
+  getStatusBadgeVariant,
+  getStatusLabel,
+  PRIORITY_LABELS,
+} from '../../utils/reportFormatters';
 
 const ReportDetails = () => {
   const { id } = useParams();
+  const { data: raw, loading, error } = useAsyncData(() => getReport(id), [id]);
+
+  if (loading) {
+    return <p className="text-text-secondary p-6">Cargando reporte...</p>;
+  }
+
+  if (error || !raw) {
+    return (
+      <div className="p-6">
+        <p className="text-danger mb-4">{error || 'Reporte no encontrado'}</p>
+        <Link to="/reports"><Button variant="secondary">Volver</Button></Link>
+      </div>
+    );
+  }
 
   const report = {
-    id: id || 'INC-0001',
-    title: 'Incendio en contenedor de basura',
-    category: 'Incendio',
-    status: 'En Progreso',
-    priority: 'Alta',
-    date: '25 Oct 2023, 14:30',
-    location: 'Av. Principal 123, Zona Centro',
-    coords: '-17.7833° S, -63.1821° W',
-    description: 'Hay un incendio activo en un contenedor de basura ubicado en la avenida principal. El fuego se está acercando a vehículos estacionados en la acera. Hay humo visible desde varias cuadras de distancia.',
+    id: raw.reportId,
+    title: raw.title,
+    category: getCategoryMeta(raw.category).label,
+    status: getStatusLabel(raw.status),
+    statusRaw: raw.status,
+    priority: PRIORITY_LABELS[raw.priority] || raw.priority,
+    date: formatDate(raw.createdAt),
+    location: raw.location || `${raw.latitude?.toFixed(4)}, ${raw.longitude?.toFixed(4)}`,
+    coords: `${Math.abs(raw.latitude).toFixed(4)}° ${raw.latitude < 0 ? 'S' : 'N'}, ${Math.abs(raw.longitude).toFixed(4)}° ${raw.longitude < 0 ? 'W' : 'E'}`,
+    description: raw.description,
+    imageUrl: raw.imageUrl,
   };
 
-  const statusBadge = report.status === 'En Progreso'
-    ? <Badge variant="warning" dot>{report.status}</Badge>
-    : <Badge variant="success" dot>{report.status}</Badge>;
+  const timelineSteps = [
+    {
+      id: 1,
+      type: 'action',
+      title: 'Reporte Enviado',
+      desc: 'El ciudadano registró el incidente en la plataforma.',
+      time: formatDate(raw.createdAt),
+      done: true,
+    },
+    {
+      id: 2,
+      type: 'system',
+      title: 'En Revisión',
+      desc: 'Las autoridades han recibido el reporte y lo están evaluando.',
+      time: raw.status !== 'pending' ? formatDate(raw.updatedAt) : 'Pendiente',
+      done: raw.status !== 'pending',
+    },
+    {
+      id: 3,
+      type: 'system',
+      title: 'Unidad Despachada',
+      desc: 'Se asignó una unidad de respuesta al incidente.',
+      time: ['dispatched', 'resolved'].includes(raw.status) ? formatDate(raw.updatedAt) : 'Pendiente',
+      done: ['dispatched', 'resolved'].includes(raw.status),
+    },
+    {
+      id: 4,
+      type: 'success',
+      title: 'Resuelto',
+      desc: 'El incidente fue atendido y dado por resuelto.',
+      time: raw.status === 'resolved' ? formatDate(raw.updatedAt) : 'Pendiente',
+      done: raw.status === 'resolved',
+    },
+  ];
+
+  const statusBadge = <Badge variant={getStatusBadgeVariant(raw.status)} dot>{report.status}</Badge>;
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-fade-in">
@@ -97,17 +144,45 @@ const ReportDetails = () => {
           <Card>
             <CardHeader><CardTitle>Evidencia Fotográfica</CardTitle></CardHeader>
             <CardContent>
-              <div className="grid grid-cols-3 gap-3">
-                {/* Placeholder images */}
-                <div className="aspect-square rounded-xl bg-secondary-bg/60 border border-border-light flex flex-col items-center justify-center text-text-muted hover:border-border hover:bg-secondary-bg/80 transition-all cursor-pointer group">
-                  <ImageIcon className="h-8 w-8 mb-2 group-hover:text-primary transition-colors" />
-                  <p className="text-xs">Foto 1</p>
+              {report.imageUrl ? (
+                <div className="space-y-3">
+                  <a
+                    href={report.imageUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block group relative overflow-hidden rounded-xl border border-border-light hover:border-primary/40 transition-all"
+                  >
+                    <img
+                      src={report.imageUrl}
+                      alt="Evidencia del incidente"
+                      className="w-full max-h-80 object-cover rounded-xl group-hover:scale-[1.02] transition-transform duration-300"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                    <div
+                      style={{ display: 'none' }}
+                      className="w-full h-40 flex flex-col items-center justify-center text-text-muted bg-secondary-bg/60 rounded-xl"
+                    >
+                      <ImageIcon className="h-8 w-8 mb-2" />
+                      <p className="text-xs">No se pudo cargar la imagen</p>
+                    </div>
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all rounded-xl flex items-center justify-center">
+                      <span className="opacity-0 group-hover:opacity-100 text-white text-xs font-medium bg-black/50 px-3 py-1.5 rounded-lg transition-opacity">
+                        Ver en pantalla completa
+                      </span>
+                    </div>
+                  </a>
+                  <p className="text-xs text-text-muted text-center">Haz clic para ver en tamaño completo</p>
                 </div>
-                <div className="aspect-square rounded-xl border-2 border-dashed border-border-light flex flex-col items-center justify-center text-text-muted hover:border-primary/40 hover:bg-primary/5 transition-all cursor-pointer">
-                  <span className="text-2xl mb-1">+</span>
-                  <p className="text-xs">Añadir</p>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-10 text-text-muted border-2 border-dashed border-border-light rounded-xl">
+                  <ImageIcon className="h-10 w-10 mb-3 opacity-40" />
+                  <p className="text-sm font-medium">Sin evidencia fotográfica</p>
+                  <p className="text-xs mt-1 opacity-70">El ciudadano no adjuntó imágenes al reporte</p>
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </div>

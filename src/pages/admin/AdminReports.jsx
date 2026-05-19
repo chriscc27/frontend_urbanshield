@@ -1,25 +1,13 @@
-import React, { useState } from 'react';
-import { Search, SlidersHorizontal, CheckCircle, MoreVertical } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Search, SlidersHorizontal, CheckCircle } from 'lucide-react';
 import Card, { CardContent } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Badge from '../../components/ui/Badge';
-
-const reports = [
-  { id: 'R-101', cat: 'Incendio', emoji: '🔥', loc: 'Zona Sur, Av. 5', time: 'Hace 5m', status: 'Nuevo', priority: 'Crítica', reporter: 'Juan P.' },
-  { id: 'R-102', cat: 'Delito', emoji: '🚨', loc: 'Centro Histórico', time: 'Hace 12m', status: 'Despachado', priority: 'Alta', reporter: 'Ana M.' },
-  { id: 'R-103', cat: 'Inundación', emoji: '🌊', loc: 'Barrio Norte', time: 'Hace 45m', status: 'En Progreso', priority: 'Media', reporter: 'Carlos R.' },
-  { id: 'R-104', cat: 'Accidente', emoji: '🚗', loc: 'Puente Este', time: 'Hace 2h', status: 'Resuelto', priority: 'Alta', reporter: 'Luis S.' },
-  { id: 'R-105', cat: 'Infraestructura', emoji: '🏗️', loc: 'Av. Circunvalación', time: 'Hace 5h', status: 'Resuelto', priority: 'Baja', reporter: 'María T.' },
-  { id: 'R-106', cat: 'Bloqueo vial', emoji: '🚧', loc: 'Plaza Central Norte', time: 'Hace 8m', status: 'Nuevo', priority: 'Media', reporter: 'Pedro V.' },
-];
-
-const statusBadge = {
-  'Nuevo':       <Badge variant="danger" dot>Nuevo</Badge>,
-  'Despachado':  <Badge variant="warning" dot>Despachado</Badge>,
-  'En Progreso': <Badge variant="primary" dot>En Progreso</Badge>,
-  'Resuelto':    <Badge variant="success" dot>Resuelto</Badge>,
-};
+import { listReports, resolveReport } from '../../services/reportsApi';
+import { useAsyncData } from '../../hooks/useAsyncData';
+import { formatReportForList, getStatusBadgeVariant } from '../../utils/reportFormatters';
+import { getApiErrorMessage } from '../../services/api';
 
 const priorityBadge = (p) => {
   const map = { 'Crítica': 'danger', 'Alta': 'warning', 'Media': 'accent', 'Baja': 'muted' };
@@ -28,9 +16,54 @@ const priorityBadge = (p) => {
 
 const AdminReports = () => {
   const [search, setSearch] = useState('');
+  const { data, loading, error, setData } = useAsyncData(() => listReports({ limit: 100 }), []);
+  const [actionError, setActionError] = useState('');
+
+  const reports = useMemo(() => {
+    return (data?.data || []).map((r) => {
+      const f = formatReportForList(r);
+      return {
+        id: f.id,
+        cat: f.title,
+        emoji: f.emoji,
+        loc: f.location,
+        time: f.date,
+        status: f.status,
+        statusRaw: f.statusRaw,
+        priority: f.priority,
+        reporter: r.userId?.slice(0, 8) || 'Ciudadano',
+      };
+    });
+  }, [data]);
+
+  const filtered = reports.filter(
+    (r) =>
+      r.cat.toLowerCase().includes(search.toLowerCase()) ||
+      r.id.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const handleResolve = async (id) => {
+    try {
+      await resolveReport(id);
+      setData({
+        ...data,
+        data: (data?.data || []).map((r) =>
+          r.reportId === id ? { ...r, status: 'resolved' } : r,
+        ),
+      });
+    } catch (err) {
+      setActionError(getApiErrorMessage(err));
+    }
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {(error || actionError) && (
+        <p className="text-sm text-danger bg-danger/10 border border-danger/20 rounded-xl px-3 py-2">
+          {error || actionError}
+        </p>
+      )}
+      {loading && <p className="text-sm text-text-muted">Cargando reportes...</p>}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold text-text-primary font-display">Gestión de Reportes</h2>
@@ -74,7 +107,7 @@ const AdminReports = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-border-light">
-              {reports.map((report) => (
+              {filtered.map((report) => (
                 <tr key={report.id} className="hover:bg-hover transition-colors group">
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
@@ -96,16 +129,20 @@ const AdminReports = () => {
                       <span className="text-text-secondary text-sm">{report.reporter}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-4">{statusBadge[report.status]}</td>
+                  <td className="px-4 py-4">
+                    <Badge variant={getStatusBadgeVariant(report.statusRaw)} dot>{report.status}</Badge>
+                  </td>
                   <td className="px-4 py-4 pr-5 text-right">
-                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      {report.status !== 'Resuelto' && (
-                        <Button variant="success" size="xs" leftIcon={<CheckCircle className="h-3 w-3" />}>Resolver</Button>
-                      )}
-                      <Button variant="ghost" size="icon" className="h-7 w-7">
-                        <MoreVertical className="h-4 w-4" />
+                    {report.statusRaw !== 'resolved' && (
+                      <Button
+                        variant="success"
+                        size="xs"
+                        leftIcon={<CheckCircle className="h-3 w-3" />}
+                        onClick={() => handleResolve(report.id)}
+                      >
+                        Resolver
                       </Button>
-                    </div>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -113,7 +150,7 @@ const AdminReports = () => {
           </table>
         </div>
         <div className="px-5 py-3 border-t border-border-light bg-muted/30 flex items-center justify-between">
-          <span className="text-xs text-text-muted">Mostrando 1–6 de 42 reportes</span>
+          <span className="text-xs text-text-muted">Mostrando {filtered.length} reportes</span>
           <div className="flex items-center gap-1">
             <Button variant="ghost" size="xs" disabled>Anterior</Button>
             <Button variant="primary" size="xs" className="h-7 w-7 p-0">1</Button>

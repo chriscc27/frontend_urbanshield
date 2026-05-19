@@ -37,8 +37,10 @@ const AdminLayout = () => {
       <div className="flex-1 flex flex-col lg:pl-64 min-w-0 transition-all duration-300">
         <TopHeader onMenuClick={() => setIsSidebarOpen(true)} title={getTitle()} />
 
-        {/* Map gets no padding, all others get full padding */}
-        <main className={`flex-1 overflow-y-auto ${location.pathname === '/admin/map' ? '' : 'p-4 sm:p-6 lg:p-8'}`}>
+        {/* Map gets a full-bleed, overflow-hidden surface; other pages keep padding. */}
+        <main
+          className={`flex-1 min-h-0 ${location.pathname === '/admin/map' ? 'overflow-hidden p-0' : 'overflow-y-auto p-4 sm:p-6 lg:p-8'}`}
+        >
           <Outlet />
         </main>
       </div>

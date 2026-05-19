@@ -3,16 +3,48 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Shield, User, Mail, Lock, Phone, Eye, EyeOff, Check } from 'lucide-react';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
+import { useAuth, getApiErrorMessage } from '../../context/AuthContext';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [showPwd, setShowPwd] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+  const [form, setForm] = React.useState({
+    name: '',
+    phone: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
 
-  const handleRegister = (e) => {
+  const handleChange = (e) => {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setError('');
+  };
+
+  const handleRegister = async (e) => {
     e.preventDefault();
+    if (form.password !== form.confirmPassword) {
+      setError('Las contraseñas no coinciden');
+      return;
+    }
     setIsLoading(true);
-    setTimeout(() => { navigate('/dashboard'); }, 1200);
+    setError('');
+    try {
+      const user = await register({
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        phone: form.phone || undefined,
+      });
+      navigate(user.role === 'admin' ? '/admin' : '/dashboard', { replace: true });
+    } catch (err) {
+      setError(getApiErrorMessage(err));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const benefits = [
@@ -86,16 +118,20 @@ const RegisterPage = () => {
             <p className="text-text-secondary text-sm mt-2">Completa tus datos para comenzar</p>
           </div>
 
+          {error && (
+            <p className="mb-4 text-sm text-danger bg-danger/10 border border-danger/20 rounded-xl px-3 py-2">{error}</p>
+          )}
+
           <form onSubmit={handleRegister} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
+              <Input name="name" value={form.name} onChange={handleChange} 
                 label="Nombre Completo"
                 type="text"
                 placeholder="Juan Pérez"
                 required
                 leftIcon={<User className="h-4 w-4" />}
               />
-              <Input
+              <Input name="phone" value={form.phone} onChange={handleChange} 
                 label="Teléfono"
                 type="tel"
                 placeholder="+1 234 567 890"
@@ -103,7 +139,7 @@ const RegisterPage = () => {
               />
             </div>
 
-            <Input
+            <Input name="email" value={form.email} onChange={handleChange} 
               label="Correo Electrónico"
               type="email"
               placeholder="tu@email.com"
@@ -112,7 +148,7 @@ const RegisterPage = () => {
             />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
+              <Input name="password" value={form.password} onChange={handleChange} 
                 label="Contraseña"
                 type={showPwd ? 'text' : 'password'}
                 placeholder="Mín. 8 caracteres"
@@ -124,7 +160,7 @@ const RegisterPage = () => {
                   </button>
                 }
               />
-              <Input
+              <Input name="confirmPassword" value={form.confirmPassword} onChange={handleChange} 
                 label="Confirmar Contraseña"
                 type="password"
                 placeholder="Repetir contraseña"

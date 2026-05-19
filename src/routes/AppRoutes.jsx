@@ -1,5 +1,6 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import ProtectedRoute from '../components/auth/ProtectedRoute';
 
 // Layouts
 import PublicLayout from '../layout/PublicLayout';
@@ -40,13 +41,17 @@ const AppRoutes = () => {
       </Route>
 
       {/* Citizen Routes */}
-      <Route element={<DashboardLayout />}>
+      <Route
+        element={
+          <ProtectedRoute role="citizen">
+            <DashboardLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route path="/dashboard" element={<CitizenDashboard />} />
         <Route path="/report/new" element={<CreateReport />} />
         <Route path="/reports" element={<MyReports />} />
         <Route path="/reports/:id" element={<ReportDetails />} />
-        
-        {/* Extra Pages (Citizen Context) */}
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/settings" element={<SettingsPage />} />
@@ -54,11 +59,22 @@ const AppRoutes = () => {
       </Route>
 
       {/* Admin Routes */}
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute role="admin">
+            <AdminLayout />
+          </ProtectedRoute>
+        }
+      >
         <Route index element={<AdminDashboard />} />
         <Route path="reports" element={<AdminReports />} />
         <Route path="map" element={<AdminMap />} />
+        <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="profile" element={<ProfilePage />} />
       </Route>
+
+      <Route path="/citizen" element={<Navigate to="/dashboard" replace />} />
 
       {/* 404 */}
       <Route path="*" element={<NotFoundPage />} />

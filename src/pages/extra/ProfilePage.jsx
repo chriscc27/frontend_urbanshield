@@ -1,11 +1,23 @@
 import React from 'react';
-import { User, Mail, Phone, MapPin, Camera, Star } from 'lucide-react';
+import { User, Mail, Phone, Camera } from 'lucide-react';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
+import { useAuth } from '../../context/AuthContext';
+import { listReports } from '../../services/reportsApi';
+import { useAsyncData } from '../../hooks/useAsyncData';
 
-const ProfilePage = () => (
+const ProfilePage = () => {
+  const { user } = useAuth();
+  const { data } = useAsyncData(() => listReports({ limit: 100 }), []);
+  const all = data?.data || [];
+  const resolved = all.filter((r) => r.status === 'resolved').length;
+  const initials = user?.name
+    ? user.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
+    : 'US';
+
+  return (
   <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
     <div>
       <h2 className="text-2xl font-bold text-text-primary font-display">Mi Perfil</h2>
@@ -19,22 +31,22 @@ const ProfilePage = () => (
           <CardContent className="p-6 text-center">
             <div className="relative inline-block mb-4">
               <div className="h-24 w-24 rounded-2xl bg-primary/10 border-2 border-primary/20 flex items-center justify-center mx-auto shadow-sm">
-                <span className="text-4xl font-bold text-primary font-display">JP</span>
+                <span className="text-4xl font-bold text-primary font-display">{initials}</span>
               </div>
               <button className="absolute -bottom-1 -right-1 h-8 w-8 bg-primary rounded-full border-2 border-white flex items-center justify-center hover:bg-primary-dark transition-colors shadow-md">
                 <Camera className="h-4 w-4 text-white" />
               </button>
             </div>
-            <h3 className="text-lg font-bold text-text-primary font-display">Juan Pérez</h3>
-            <p className="text-sm text-text-secondary mb-4">Ciudadano Activo</p>
+            <h3 className="text-lg font-bold text-text-primary font-display">{user?.name || 'Usuario'}</h3>
+            <p className="text-sm text-text-secondary mb-4">{user?.role === 'admin' ? 'Administrador' : 'Ciudadano'}</p>
             <div className="flex justify-center gap-2 mb-5">
               <Badge variant="primary" dot>Verificado</Badge>
               <Badge variant="accent">Nivel 3</Badge>
             </div>
             <div className="space-y-3 pt-4 border-t border-border-light text-left">
               {[
-                { label: 'Reportes Totales', value: '12' },
-                { label: 'Resueltos', value: '8' },
+                { label: 'Reportes Totales', value: String(all.length) },
+                { label: 'Resueltos', value: String(resolved) },
                 { label: 'Precisión GPS', value: '94%' },
                 { label: 'Confianza', value: '★★★★ Alto' },
               ].map((item, i) => (
@@ -74,11 +86,10 @@ const ProfilePage = () => (
           <CardContent>
             <form className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Input label="Nombre Completo" defaultValue="Juan Pérez" leftIcon={<User className="h-4 w-4" />} />
-                <Input label="Teléfono" defaultValue="+1 234 567 890" leftIcon={<Phone className="h-4 w-4" />} />
+                <Input label="Nombre Completo" defaultValue={user?.name || ''} readOnly leftIcon={<User className="h-4 w-4" />} />
+                <Input label="Teléfono" defaultValue={user?.phone || '—'} readOnly leftIcon={<Phone className="h-4 w-4" />} />
               </div>
-              <Input label="Correo Electrónico" type="email" defaultValue="juan.perez@example.com" leftIcon={<Mail className="h-4 w-4" />} />
-              <Input label="Dirección Principal" defaultValue="Av. Principal 123, Zona Centro" leftIcon={<MapPin className="h-4 w-4" />} />
+              <Input label="Correo Electrónico" type="email" defaultValue={user?.email || ''} readOnly leftIcon={<Mail className="h-4 w-4" />} />
               <div className="pt-4 flex justify-end gap-3 border-t border-border-light">
                 <Button variant="ghost" size="sm">Cancelar</Button>
                 <Button size="sm">Guardar Cambios</Button>
@@ -107,6 +118,7 @@ const ProfilePage = () => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default ProfilePage;

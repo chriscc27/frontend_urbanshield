@@ -1,31 +1,34 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, SlidersHorizontal, Eye, Clock, MapPin, AlertCircle, Grid, List, Plus } from 'lucide-react';
 import Card, { CardContent } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Badge from '../../components/ui/Badge';
-
-const mockReports = [
-  { id: 'INC-0001', title: 'Incendio en contenedor de basura', type: 'Incendio', date: '25 Oct 2023', status: 'En Progreso', location: 'Av. Principal 123', emoji: '🔥' },
-  { id: 'INC-0002', title: 'Bache profundo en calzada', type: 'Infraestructura', date: '26 Oct 2023', status: 'Resuelto', location: 'Calle 4 y Av. Sur', emoji: '🏗️' },
-  { id: 'INC-0003', title: 'Accidente de tránsito múltiple', type: 'Accidente', date: '27 Oct 2023', status: 'Pendiente', location: 'Puente Norte', emoji: '🚗' },
-  { id: 'INC-0004', title: 'Alumbrado público roto', type: 'Infraestructura', date: '28 Oct 2023', status: 'Resuelto', location: 'Plaza Central', emoji: '🏗️' },
-  { id: 'INC-0005', title: 'Inundación por lluvias intensas', type: 'Inundación', date: '29 Oct 2023', status: 'En Progreso', location: 'Barrio Sur', emoji: '🌊' },
-];
-
-const statusBadgeVariant = { 'En Progreso': 'warning', 'Resuelto': 'success', 'Pendiente': 'danger' };
+import { listReports } from '../../services/reportsApi';
+import { useAsyncData } from '../../hooks/useAsyncData';
+import { formatReportForList, getStatusBadgeVariant } from '../../utils/reportFormatters';
 
 const MyReports = () => {
   const [search, setSearch] = useState('');
   const [view, setView] = useState('table');
+  const { data, loading, error } = useAsyncData(() => listReports({ limit: 50 }), []);
 
-  const filtered = mockReports.filter(r =>
-    r.title.toLowerCase().includes(search.toLowerCase()) || r.id.toLowerCase().includes(search.toLowerCase())
+  const reports = useMemo(
+    () => (data?.data || []).map(formatReportForList),
+    [data],
+  );
+
+  const filtered = reports.filter(
+    (r) =>
+      r.title.toLowerCase().includes(search.toLowerCase()) ||
+      r.id.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
+      {error && <p className="text-sm text-danger bg-danger/10 border border-danger/20 rounded-xl px-3 py-2">{error}</p>}
+      {loading && <p className="text-sm text-text-secondary">Cargando reportes...</p>}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold text-text-primary font-display">Mis Reportes</h2>
@@ -99,7 +102,7 @@ const MyReports = () => {
                     <td className="px-4 py-4 text-text-secondary hidden md:table-cell">
                       <div className="flex items-center gap-1.5 text-sm"><Clock className="h-3.5 w-3.5" />{report.date}</div>
                     </td>
-                    <td className="px-4 py-4"><Badge variant={statusBadgeVariant[report.status] || 'default'} dot>{report.status}</Badge></td>
+                    <td className="px-4 py-4"><Badge variant={getStatusBadgeVariant(report.statusRaw)} dot>{report.status}</Badge></td>
                     <td className="px-4 py-4 pr-5 text-right">
                       <Link to={`/reports/${report.id}`}><Button variant="ghost" size="xs" leftIcon={<Eye className="h-3.5 w-3.5" />}>Ver</Button></Link>
                     </td>
@@ -109,7 +112,7 @@ const MyReports = () => {
             </table>
           </div>
           <div className="px-5 py-3 border-t border-border-light bg-muted/30 flex items-center justify-between">
-            <span className="text-xs text-text-muted">Mostrando {filtered.length} de {mockReports.length} reportes</span>
+            <span className="text-xs text-text-muted">Mostrando {filtered.length} de {reports.length} reportes</span>
             <div className="flex items-center gap-1">
               <Button variant="ghost" size="xs" disabled>Anterior</Button>
               <Button variant="primary" size="xs" className="h-7 w-7 p-0 text-xs">1</Button>
@@ -128,7 +131,7 @@ const MyReports = () => {
               <CardContent className="p-5">
                 <div className="flex justify-between items-start mb-3">
                   <span className="text-2xl">{report.emoji}</span>
-                  <Badge variant={statusBadgeVariant[report.status] || 'default'} dot>{report.status}</Badge>
+                  <Badge variant={getStatusBadgeVariant(report.statusRaw)} dot>{report.status}</Badge>
                 </div>
                 <h3 className="font-semibold text-text-primary mb-1">{report.title}</h3>
                 <p className="text-xs font-mono text-text-muted mb-3">{report.id}</p>

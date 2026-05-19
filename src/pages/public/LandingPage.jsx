@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, AlertTriangle, Map as MapIcon, Activity, ChevronRight, Flame, Waves, Car, ShieldAlert, Construction, Quote, Radio } from 'lucide-react';
 import Button from '../../components/ui/Button';
-import { TESTIMONIALS } from '../../data/mockData';
+import { TESTIMONIALS } from '../../data/landingContent';
 
 const liveIncidents = [
   { type: 'Incendio', icon: Flame, location: 'Mercado Central, Zona 1', time: 'Hace 2 min', status: 'Crítico', color: 'text-danger', bg: 'bg-danger/8', border: 'border-danger/15' },
@@ -164,7 +164,7 @@ const LandingPage = () => (
             </Link>
           </div>
 
-          {/* Map Mock */}
+          {/* Mapa en vivo */}
           <div className="lg:w-1/2 w-full order-1 lg:order-2">
             <div className="aspect-[4/3] rounded-2xl border border-border shadow-xl overflow-hidden relative map-placeholder">
               {/* Roads */}

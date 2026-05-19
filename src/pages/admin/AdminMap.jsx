@@ -1,18 +1,84 @@
-import React, { useState } from 'react';
-import { Layers, Search, ShieldAlert, Crosshair, Maximize } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Layers, Search, ShieldAlert, Crosshair, Maximize, RefreshCw } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
+import { getMapMarkers, searchPlaces } from '../../services/locationApi';
+import { usePolling } from '../../hooks/usePolling';
+import { formatReportForList } from '../../utils/reportFormatters';
+import { getApiErrorMessage } from '../../services/api';
+import AwsLocationMap from '../../components/common/AwsLocationMap';
+
+const POLL_MS = 15000;
 
 const AdminMap = () => {
   const [activeFilter, setActiveFilter] = useState('all');
+  const { data, loading, error, lastUpdated, refetch } = usePolling(() => getMapMarkers(), [], POLL_MS);
+
+  const markers = useMemo(() => {
+    const list = Array.isArray(data) ? data : data?.markers || [];
+    return list.map((m) => {
+      const report = m.report || m;
+      const f = formatReportForList(report);
+      return {
+        id: f.id,
+        text: `${f.title} — ${f.location}`,
+        priority: report.priority,
+        status: f.statusRaw || report.status,
+        lat: m.lat ?? report.latitude,
+        lng: m.lng ?? report.longitude,
+      };
+    });
+  }, [data]);
+
+  const filtered = markers.filter((m) => {
+    if (activeFilter === 'critical') return m.priority === 'critical';
+    if (activeFilter === 'active') return m.status !== 'resolved';
+    return true;
+  });
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const markerPoints = useMemo(() => filtered.map((marker) => ({
+    latitude: marker.lat,
+    longitude: marker.lng,
+    color: marker.priority === 'critical' ? '#dc2626' : marker.status === 'resolved' ? '#16a34a' : '#f59e0b',
+    popupHtml: `<strong>${marker.id}</strong><br/>${marker.text}`,
+  })), [filtered]);
+
+  // handle search input with debounce
+  useEffect(() => {
+    if (!searchQuery || searchQuery.length < 2) {
+      setSuggestions([]);
+      return undefined;
+    }
+    const timerId = setTimeout(async () => {
+      try {
+        const res = await searchPlaces(searchQuery);
+        setSuggestions(res || []);
+        setShowSuggestions(true);
+      } catch (e) {
+        setSuggestions([]);
+      }
+    }, 300);
+    return () => clearTimeout(timerId);
+  }, [searchQuery]);
+
+  const onSelectSuggestion = (s) => {
+    setShowSuggestions(false);
+    setSearchQuery(s.label || '');
+  };
 
   return (
-    <div className="h-full flex flex-col relative -m-4 sm:-m-6 lg:-m-8">
-      {/* Controls Overlay */}
-      <div className="absolute top-4 left-4 right-4 z-10 flex justify-between items-start pointer-events-none">
+    <div className="relative h-full min-h-[calc(100vh-3.5rem)] w-full overflow-hidden bg-primary-bg">
+      {error && (
+        <p className="absolute top-3 left-1/2 -translate-x-1/2 z-30 text-xs text-danger bg-danger/10 border border-danger/20 rounded-lg px-3 py-1 shadow-sm">
+          {getApiErrorMessage(error)}
+        </p>
+      )}
 
-        {/* Search & Filter Panel */}
-        <div className="w-80 bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-border overflow-hidden pointer-events-auto">
+      <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-start pointer-events-none">
+        <div className="w-full max-w-md bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-border overflow-hidden pointer-events-auto">
           <div className="p-4 border-b border-border-light">
             <h3 className="font-bold text-text-primary font-display mb-3 flex items-center gap-2 text-sm">
               <span className="h-7 w-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
@@ -20,9 +86,9 @@ const AdminMap = () => {
               </span>
               Centro de Monitoreo
             </h3>
-            <Input placeholder="Buscar ubicación o ID..." leftIcon={<Search className="h-4 w-4" />} className="py-2 text-sm" />
+            <Input placeholder="Buscar ubicación o ID..." leftIcon={<Search className="h-4 w-4" />} className="py-2 text-sm w-full" />
           </div>
-          <div className="p-4 space-y-4">
+            <div className="p-4 space-y-4">
             <div>
               <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Filtros Rápidos</p>
               <div className="flex flex-wrap gap-2">
@@ -30,9 +96,10 @@ const AdminMap = () => {
                   { label: 'Todos', value: 'all', style: 'bg-primary text-white border-primary' },
                   { label: 'Críticos', value: 'critical', style: 'bg-danger/10 text-danger border-danger/20 hover:bg-danger/15' },
                   { label: 'Activos', value: 'active', style: 'bg-warning/10 text-warning border-warning/20 hover:bg-warning/15' },
-                ].map(f => (
+                ].map((f) => (
                   <button
                     key={f.value}
+                    type="button"
                     onClick={() => setActiveFilter(f.value)}
                     className={`px-3 py-1.5 text-xs rounded-full font-medium border transition-colors ${activeFilter === f.value ? f.style : 'bg-muted text-text-secondary border-border-light hover:bg-hover'}`}
                   >
@@ -41,21 +108,48 @@ const AdminMap = () => {
                 ))}
               </div>
             </div>
-            <div>
-              <p className="text-xs font-semibold text-text-muted uppercase tracking-wider mb-2">Capas de Mapa</p>
-              <div className="space-y-2">
-                {['Unidades de Respuesta', 'Incidentes Reportados', 'Mapa de Calor (Riesgo)'].map((l, i) => (
-                  <label key={l} className="flex items-center gap-2 text-sm text-text-primary cursor-pointer">
-                    <input type="checkbox" defaultChecked={i < 2} className="rounded border-border text-primary focus:ring-primary/30 focus:ring-offset-0" />
-                    {l}
-                  </label>
-                ))}
+            <div className="relative">
+              <Input
+                placeholder="Buscar ubicación o ID..."
+                leftIcon={<Search className="h-4 w-4" />}
+                className="py-2 text-sm w-full"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => { if (suggestions.length) setShowSuggestions(true); }}
+              />
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute mt-1 left-0 right-0 bg-white border border-border rounded-md shadow-lg z-30 max-h-60 overflow-auto">
+                  {suggestions.map((s, i) => (
+                    <div key={i} role="button" tabIndex={0} onClick={() => onSelectSuggestion(s)} onKeyDown={() => onSelectSuggestion(s)} className="px-3 py-2 text-sm hover:bg-hover cursor-pointer">
+                      {s.label}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-xs text-text-muted">
+                  {loading ? 'Actualizando...' : `${filtered.length} incidentes en mapa`}
+                </p>
+                <div className="flex items-center gap-2">
+                  {lastUpdated && (
+                    <span className="text-[10px] text-text-muted">
+                      {lastUpdated.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={refetch}
+                    className="p-1 rounded-lg hover:bg-hover text-text-muted hover:text-primary transition-colors"
+                    title="Actualizar ahora"
+                  >
+                    <RefreshCw className={`h-3 w-3 ${loading ? 'animate-spin' : ''}`} />
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Control Buttons */}
         <div className="flex flex-col gap-2 pointer-events-auto">
           {[Layers, Crosshair, Maximize].map((Icon, i) => (
             <Button key={i} variant="secondary" size="icon" className="shadow-md">
@@ -65,8 +159,7 @@ const AdminMap = () => {
         </div>
       </div>
 
-      {/* Activity Stream */}
-      <div className="absolute bottom-6 right-6 z-10 w-76 bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-border overflow-hidden pointer-events-auto flex flex-col max-h-80" style={{ width: '300px' }}>
+      <div className="absolute bottom-6 right-6 z-20 bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-border overflow-hidden pointer-events-auto flex flex-col max-h-80" style={{ width: '300px' }}>
         <div className="p-3 bg-danger/8 border-b border-danger/15 flex justify-between items-center">
           <span className="font-bold text-danger text-sm flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-danger animate-pulse-subtle" />
@@ -74,54 +167,38 @@ const AdminMap = () => {
           </span>
         </div>
         <div className="overflow-y-auto flex-1">
-          {[
-            { id: 'R-101', text: 'Incendio reportado en Zona Sur', time: 'Hace 1m', type: 'danger' },
-            { id: 'U-05', text: 'Unidad B-14 despachada', time: 'Hace 2m', type: 'warning' },
-            { id: 'R-098', text: 'Incidente de tránsito resuelto', time: 'Hace 15m', type: 'success' },
-            { id: 'R-102', text: 'Nuevo reporte de inundación', time: 'Hace 22m', type: 'danger' },
-          ].map((log, i) => (
-            <div key={i} className="p-3 border-b border-border-light hover:bg-hover transition-colors text-sm last:border-b-0">
+          {filtered.slice(0, 8).map((log) => (
+            <div key={log.id} className="p-3 border-b border-border-light hover:bg-hover transition-colors text-sm last:border-b-0">
               <div className="flex justify-between items-start mb-1">
                 <span className="font-bold text-text-primary text-xs">{log.id}</span>
-                <span className="text-xs text-text-muted">{log.time}</span>
               </div>
-              <p className={`text-xs ${log.type === 'danger' ? 'text-danger' : log.type === 'success' ? 'text-success' : 'text-warning'}`}>
-                {log.text}
-              </p>
+              <p className={`text-xs ${log.priority === 'critical' ? 'text-danger' : 'text-warning'}`}>{log.text}</p>
             </div>
           ))}
+          {!loading && filtered.length === 0 && (
+            <p className="p-4 text-xs text-text-muted text-center">Sin incidentes activos</p>
+          )}
         </div>
       </div>
 
-      {/* Map Canvas */}
-      <div className="flex-1 map-placeholder w-full h-full">
-        {/* Danger cluster */}
-        <div className="absolute top-1/3 left-1/3 group cursor-pointer">
-          <div className="h-14 w-14 rounded-full bg-danger/10 flex items-center justify-center animate-ping absolute inset-0" />
-          <div className="h-14 w-14 rounded-full bg-danger/8 flex items-center justify-center relative">
-            <div className="h-8 w-8 rounded-full bg-danger border-2 border-white shadow-lg flex items-center justify-center text-white font-bold text-xs">3</div>
-          </div>
-          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-white border border-border-strong rounded-xl p-3 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
-            <p className="text-xs font-bold text-danger mb-1">Zona Crítica</p>
-            <p className="text-xs text-text-secondary">3 Incidentes activos.</p>
-          </div>
-        </div>
-
-        <div className="absolute bottom-1/3 right-1/3 h-4 w-4 bg-primary rounded-full border-2 border-white shadow-md" />
-        <div className="absolute top-1/2 right-1/4">
-          <div className="h-6 w-6 rounded-full bg-warning/20 flex items-center justify-center">
-            <div className="h-3 w-3 bg-warning rounded-full border border-white" />
+        <div className="absolute inset-0 z-0 overflow-hidden rounded-none">
+          <AwsLocationMap centerOnUserLocation={true}
+            className="absolute inset-0"
+            center={[-63.18, -17.78]}
+            zoom={12}
+            markers={markerPoints}
+            showNavigation={false}
+          />
+          <div className="absolute top-4 right-4 z-30">
+            <div className="bg-white/90 text-xs px-2 py-1 rounded-full border border-border flex items-center gap-2 shadow-sm">
+              <span className="h-2 w-2 rounded-full bg-primary" />
+              <span>Amazon Location</span>
+            </div>
           </div>
         </div>
-        <div className="absolute bottom-1/4 left-1/4">
-          <div className="px-2.5 py-1 bg-primary/90 rounded-lg text-[10px] font-bold text-white shadow-md flex items-center gap-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse-subtle" />
-            Unidad P-04
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
 
 export default AdminMap;
+ 

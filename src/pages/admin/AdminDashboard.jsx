@@ -2,7 +2,9 @@ import React from 'react';
 import { AlertTriangle, Activity, CheckCircle, Clock, TrendingUp, Users, Flame, ShieldAlert, Waves, Car, Construction } from 'lucide-react';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Link } from 'react-router-dom';
-import { INCIDENTS, EMERGENCY_STATS, RECENT_ACTIVITY } from '../../data/mockData';
+import { getDashboard } from '../../services/adminApi';
+import { useAsyncData } from '../../hooks/useAsyncData';
+import { formatReportForList, getStatusLabel } from '../../utils/reportFormatters';
 import Badge from '../../components/ui/Badge';
 
 const getStatusBadge = (status) => {
@@ -16,10 +18,16 @@ const getStatusBadge = (status) => {
 };
 
 const AdminDashboard = () => {
+  const { data, loading, error } = useAsyncData(() => getDashboard(), []);
+  const stats = data?.stats || {};
+  const criticalReports = (data?.criticalReports || []).map(formatReportForList);
+  const recentActivity = data?.recentActivity || [];
   const chartBars = [30, 45, 20, 60, 85, 40, 55, 75, 90, 65, 50, 40];
 
   return (
     <div className="space-y-6">
+      {error && <p className="text-sm text-danger bg-danger/10 border border-danger/20 rounded-xl px-3 py-2">{error}</p>}
+      {loading && <p className="text-sm text-text-muted">Cargando panel...</p>}
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -37,10 +45,10 @@ const AdminDashboard = () => {
       {/* KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Incidentes Activos',    value: EMERGENCY_STATS.activeIncidents, change: '+12%', icon: AlertTriangle, color: 'text-danger',  bg: 'bg-danger/8 border-danger/15' },
-          { label: 'Tiempo Resp. Promedio', value: EMERGENCY_STATS.avgResponseTime, change: '-2min', icon: Clock,         color: 'text-warning', bg: 'bg-warning/8 border-warning/15' },
-          { label: 'Resueltos Hoy',         value: EMERGENCY_STATS.resolvedToday,   change: '+5%',  icon: CheckCircle,   color: 'text-success', bg: 'bg-success/8 border-success/15' },
-          { label: 'Unidades Desplegadas',  value: `${EMERGENCY_STATS.deployedUnits}/${EMERGENCY_STATS.totalUnits}`, change: 'Activas', icon: Users, color: 'text-primary', bg: 'bg-primary/8 border-primary/15' },
+          { label: 'Incidentes Activos', value: stats.activeIncidents ?? 0, change: 'En tiempo real', icon: AlertTriangle, color: 'text-danger', bg: 'bg-danger/8 border-danger/15' },
+          { label: 'Tiempo Resp. Promedio', value: stats.avgResponseTime ?? '—', change: 'Operativo', icon: Clock, color: 'text-warning', bg: 'bg-warning/8 border-warning/15' },
+          { label: 'Resueltos Hoy', value: stats.resolvedToday ?? 0, change: 'Hoy', icon: CheckCircle, color: 'text-success', bg: 'bg-success/8 border-success/15' },
+          { label: 'Unidades Desplegadas', value: `${stats.deployedUnits ?? 0}/${stats.totalUnits ?? 0}`, change: 'Activas', icon: Users, color: 'text-primary', bg: 'bg-primary/8 border-primary/15' },
         ].map((kpi, i) => (
           <Card key={i} className="relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-[0.04]">
@@ -156,7 +164,7 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border-light">
-                  {INCIDENTS.slice(0, 5).map((inc) => (
+                  {criticalReports.slice(0, 5).map((inc) => (
                     <tr key={inc.id} className="hover:bg-hover transition-colors">
                       <td className="p-3 pl-5">
                         <p className="font-mono text-xs font-bold text-text-muted">{inc.id}</p>
@@ -166,7 +174,7 @@ const AdminDashboard = () => {
                       <td className="p-3">{getStatusBadge(inc.status)}</td>
                       <td className="p-3 pr-5 text-xs text-text-muted text-right hidden md:table-cell">
                         <Clock className="h-3 w-3 inline mr-1" />
-                        {new Date(inc.date).toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })}
+                        {inc.date}
                       </td>
                     </tr>
                   ))}
@@ -181,25 +189,28 @@ const AdminDashboard = () => {
             <CardHeader><CardTitle>Por Categoría</CardTitle></CardHeader>
             <CardContent className="space-y-2.5">
               {[
-                { icon: Flame,        label: 'Incendio',       count: 8,  color: 'text-danger',   bar: 'bg-danger' },
-                { icon: Waves,        label: 'Inundación',     count: 5,  color: 'text-blue-500', bar: 'bg-blue-400' },
-                { icon: ShieldAlert,  label: 'Delito',         count: 14, color: 'text-purple-500',bar: 'bg-purple-400' },
-                { icon: Car,          label: 'Accidente',      count: 11, color: 'text-warning',  bar: 'bg-warning' },
-                { icon: Construction, label: 'Infraestructura',count: 4,  color: 'text-primary',  bar: 'bg-primary' },
-              ].map((cat, i) => (
+                { icon: Flame, label: 'Incendio', key: 'incendio', color: 'text-danger', bar: 'bg-danger' },
+                { icon: Waves, label: 'Inundación', key: 'inundacion', color: 'text-blue-500', bar: 'bg-blue-400' },
+                { icon: ShieldAlert, label: 'Delito', key: 'delito', color: 'text-purple-500', bar: 'bg-purple-400' },
+                { icon: Car, label: 'Accidente', key: 'accidente', color: 'text-warning', bar: 'bg-warning' },
+                { icon: Construction, label: 'Infraestructura', key: 'infraestructura', color: 'text-primary', bar: 'bg-primary' },
+              ].map((cat, i) => {
+                const count = data?.analytics?.byCategory?.[cat.key] || 0;
+                return (
                 <div key={i} className="flex items-center gap-3">
                   <cat.icon className={`h-4 w-4 flex-shrink-0 ${cat.color}`} />
                   <div className="flex-1">
                     <div className="flex justify-between text-xs mb-1">
                       <span className="text-text-primary font-medium">{cat.label}</span>
-                      <span className="text-text-muted">{cat.count}</span>
+                      <span className="text-text-muted">{count}</span>
                     </div>
                     <div className="h-1.5 bg-secondary-bg rounded-full overflow-hidden">
-                      <div className={`h-full rounded-full ${cat.bar}`} style={{ width: `${(cat.count / 14) * 100}%`, opacity: 0.75 }} />
+                      <div />
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </CardContent>
           </Card>
 
@@ -211,12 +222,12 @@ const AdminDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              {RECENT_ACTIVITY.slice(0, 4).map((act, i) => (
-                <div key={act.id} className={`px-5 py-3 flex items-center gap-3 ${i < 3 ? 'border-b border-border-light' : ''}`}>
-                  <div className={`h-2 w-2 rounded-full flex-shrink-0 ${act.type === 'danger' ? 'bg-danger' : act.type === 'success' ? 'bg-success' : 'bg-warning'}`} />
+              {recentActivity.slice(0, 4).map((act, i) => (
+                <div key={act.activityId || i} className={`px-5 py-3 flex items-center gap-3 ${i < 3 ? 'border-b border-border-light' : ''}`}>
+                  <div className={`h-2 w-2 rounded-full flex-shrink-0 ${act.action?.includes('RESOLVED') ? 'bg-success' : 'bg-danger'}`} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-text-primary truncate">{act.text}</p>
-                    <p className="text-[10px] text-text-muted">{act.time}</p>
+                    <p className="text-xs text-text-primary truncate">{act.action?.replace(/_/g, ' ') || 'Actividad'}</p>
+                    <p className="text-[10px] text-text-muted">{act.createdAt ? new Date(act.createdAt).toLocaleString('es-BO') : ''}</p>
                   </div>
                 </div>
               ))}
