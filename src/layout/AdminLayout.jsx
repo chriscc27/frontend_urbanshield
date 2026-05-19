@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { LayoutDashboard, FileText, Map, ShieldAlert, Settings } from 'lucide-react';
 import Sidebar from '../components/common/Sidebar';
 import TopHeader from '../components/common/TopHeader';
@@ -39,9 +40,20 @@ const AdminLayout = () => {
 
         {/* Map gets a full-bleed, overflow-hidden surface; other pages keep padding. */}
         <main
-          className={`flex-1 min-h-0 ${location.pathname === '/admin/map' ? 'overflow-hidden p-0' : 'overflow-y-auto p-4 sm:p-6 lg:p-8'}`}
+          className={`flex-1 min-h-0 relative ${location.pathname === '/admin/map' ? 'overflow-hidden p-0' : 'overflow-y-auto p-4 sm:p-6 lg:p-8'}`}
         >
-          <Outlet />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: "easeOut" }}
+              className="h-full"
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
     </div>

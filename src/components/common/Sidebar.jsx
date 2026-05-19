@@ -1,11 +1,30 @@
 import React from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { Shield, LogOut, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useNotifications } from '../../context/NotificationContext';
+import { useAuth } from '../../context/AuthContext';
 
 const Sidebar = ({ links, isOpen, setIsOpen }) => {
   const { unreadCount } = useNotifications();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const initials = user?.name
+    ? user.name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase()
+    : 'US';
+
+  const roleLabel = user?.role === 'admin' ? 'Administrador' : 'Ciudadano';
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
   return (
   <>
     {/* Mobile overlay */}
@@ -91,23 +110,23 @@ const Sidebar = ({ links, isOpen, setIsOpen }) => {
           style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)' }}
         >
           <div className="h-7 w-7 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-            <span className="text-xs font-bold text-white">JP</span>
+            <span className="text-xs font-bold text-white">{initials}</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-semibold text-white truncate">Juan Pérez</p>
-            <p className="text-[10px]" style={{ color: 'rgba(159,186,175,0.8)' }}>Ciudadano Activo</p>
+            <p className="text-xs font-semibold text-white truncate">{user?.name || 'Usuario'}</p>
+            <p className="text-[10px]" style={{ color: 'rgba(159,186,175,0.8)' }}>{roleLabel}</p>
           </div>
         </div>
-        <Link
-          to="/"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150"
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150"
           style={{ color: 'rgba(231,111,81,0.9)' }}
           onMouseEnter={e => e.currentTarget.style.background = 'rgba(231,111,81,0.1)'}
           onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
         >
           <LogOut style={{ width: '16px', height: '16px', flexShrink: 0 }} />
           <span>Cerrar Sesión</span>
-        </Link>
+        </button>
       </div>
     </aside>
   </>
