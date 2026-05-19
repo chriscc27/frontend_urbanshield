@@ -14,6 +14,7 @@ import RegisterPage from '../pages/public/RegisterPage';
 
 // Citizen Pages
 import CitizenDashboard from '../pages/citizen/CitizenDashboard';
+import CitizenMap from '../pages/citizen/CitizenMap';
 import CreateReport from '../pages/citizen/CreateReport';
 import MyReports from '../pages/citizen/MyReports';
 import ReportDetails from '../pages/citizen/ReportDetails';
@@ -21,6 +22,7 @@ import ReportDetails from '../pages/citizen/ReportDetails';
 // Admin Pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import AdminReports from '../pages/admin/AdminReports';
+import AdminHistory from '../pages/admin/AdminHistory';
 import AdminMap from '../pages/admin/AdminMap';
 
 // Extra Pages
@@ -49,6 +51,7 @@ const AppRoutes = () => {
         }
       >
         <Route path="/dashboard" element={<CitizenDashboard />} />
+        <Route path="/radar" element={<CitizenMap />} />
         <Route path="/report/new" element={<CreateReport />} />
         <Route path="/reports" element={<MyReports />} />
         <Route path="/reports/:id" element={<ReportDetails />} />
@@ -69,6 +72,7 @@ const AppRoutes = () => {
       >
         <Route index element={<AdminDashboard />} />
         <Route path="reports" element={<AdminReports />} />
+        <Route path="history" element={<AdminHistory />} />
         <Route path="map" element={<AdminMap />} />
         <Route path="notifications" element={<NotificationsPage />} />
         <Route path="profile" element={<ProfilePage />} />

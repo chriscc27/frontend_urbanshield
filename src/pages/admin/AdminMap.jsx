@@ -17,17 +17,21 @@ const AdminMap = () => {
   const markers = useMemo(() => {
     const list = Array.isArray(data) ? data : data?.markers || [];
     return list.map((m) => {
-      const report = m.report || m;
-      const f = formatReportForList(report);
+      // Backend (location.service.js) returns: { id, latitude, longitude, category, status, priority, title }
+      // It might also return a full report if used elsewhere, so we handle both
+      const reportId = m.id || m.reportId;
+      const lat = m.lat ?? m.latitude;
+      const lng = m.lng ?? m.longitude;
+      
       return {
-        id: f.id,
-        text: `${f.title} — ${f.location}`,
-        priority: report.priority,
-        status: f.statusRaw || report.status,
-        lat: m.lat ?? report.latitude,
-        lng: m.lng ?? report.longitude,
+        id: reportId,
+        text: `${m.title || m.category || 'Incidente'}`,
+        priority: m.priority || 'medium',
+        status: m.status || 'pending',
+        lat: lat,
+        lng: lng,
       };
-    });
+    }).filter(m => m.lat != null && m.lng != null);
   }, [data]);
 
   const filtered = markers.filter((m) => {

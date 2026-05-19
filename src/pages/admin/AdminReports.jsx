@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Search, CheckCircle, Clock, ShieldAlert } from 'lucide-react';
+import { Search, CheckCircle, Clock, ShieldAlert, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   DndContext,
@@ -9,6 +9,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  useDroppable,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -23,9 +24,10 @@ import Card, { CardContent, CardHeader, CardTitle } from '../../components/ui/Ca
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import Badge from '../../components/ui/Badge';
-import { listReports, resolveReport } from '../../services/reportsApi';
+import { listReports, resolveReport, deleteReport, updateReportStatus } from '../../services/reportsApi';
 import { useAsyncData } from '../../hooks/useAsyncData';
 import { formatReportForList } from '../../utils/reportFormatters';
+import { getApiErrorMessage } from '../../services/api';
 
 // ─── UTILS & COMPONENTS ─────────────────────────────────────────────────────────
 
@@ -35,7 +37,7 @@ const priorityBadge = (p) => {
 };
 
 // Sortable Item Component
-const SortableReportCard = ({ id, report }) => {
+const SortableReportCard = ({ id, report, onDelete }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
   const style = {
@@ -46,17 +48,26 @@ const SortableReportCard = ({ id, report }) => {
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing mb-3">
-      <ReportCard report={report} />
+      <ReportCard report={report} onDelete={onDelete} />
     </div>
   );
 };
 
 // UI for the Report Card
-const ReportCard = ({ report, isOverlay }) => {
+const ReportCard = ({ report, isOverlay, onDelete }) => {
   return (
-    <Card className={`border-border-light shadow-sm hover:shadow-md transition-shadow ${isOverlay ? 'scale-105 shadow-xl rotate-2 cursor-grabbing' : ''}`}>
+    <Card className={`border-border-light shadow-sm hover:shadow-md transition-shadow relative group ${isOverlay ? 'scale-105 shadow-xl rotate-2 cursor-grabbing' : ''}`}>
+      {onDelete && (
+        <button 
+          onPointerDown={(e) => { e.stopPropagation(); onDelete(report.id); }}
+          className="absolute top-3 right-3 p-1.5 rounded-md bg-danger/10 text-danger opacity-0 group-hover:opacity-100 transition-opacity hover:bg-danger hover:text-white z-10"
+          title="Eliminar reporte"
+        >
+          <Trash2 className="h-3 w-3" />
+        </button>
+      )}
       <CardContent className="p-4">
-        <div className="flex justify-between items-start mb-2">
+        <div className="flex justify-between items-start mb-2 pr-8">
           <div className="flex items-center gap-2">
             <span className="text-xl">{report.emoji}</span>
             <p className="font-semibold text-text-primary text-sm line-clamp-1">{report.cat}</p>
@@ -78,6 +89,16 @@ const ReportCard = ({ report, isOverlay }) => {
   );
 };
 
+// Droppable Column
+const DroppableColumn = ({ id, children }) => {
+  const { setNodeRef } = useDroppable({ id });
+  return (
+    <div ref={setNodeRef} className="flex-1 rounded-2xl bg-secondary-bg/30 p-3 border border-border-light/50 min-h-[150px] flex flex-col">
+      {children}
+    </div>
+  );
+};
+
 // ─── MAIN COMPONENT ─────────────────────────────────────────────────────────────
 
 const AdminReports = () => {
@@ -92,6 +113,7 @@ const AdminReports = () => {
   });
 
   const [activeId, setActiveId] = useState(null);
+  const [activeOriginalContainer, setActiveOriginalContainer] = useState(null);
 
   // Initialize columns when data loads
   useEffect(() => {
@@ -111,7 +133,7 @@ const AdminReports = () => {
       });
 
       setColumns({
-        pending: formatted.filter(r => ['new', 'pending'].includes(r.statusRaw)),
+        pending: formatted.filter(r => ['new', 'pending', 'verified'].includes(r.statusRaw)),
         in_progress: formatted.filter(r => ['dispatched', 'in_progress'].includes(r.statusRaw)),
         resolved: formatted.filter(r => r.statusRaw === 'resolved')
       });
@@ -131,6 +153,7 @@ const AdminReports = () => {
 
   const handleDragStart = (event) => {
     setActiveId(event.active.id);
+    setActiveOriginalContainer(findContainer(event.active.id));
   };
 
   const handleDragOver = (event) => {
@@ -149,7 +172,7 @@ const AdminReports = () => {
       const activeItems = prev[activeContainer];
       const overItems = prev[overContainer];
       const activeIndex = activeItems.findIndex((i) => i.id === activeId);
-      const overIndex = overId in prev ? overItems.length + 1 : overItems.findIndex((i) => i.id === overId);
+      const overIndex = overId in prev ? overItems.length : overItems.findIndex((i) => i.id === overId);
 
       return {
         ...prev,
@@ -166,9 +189,13 @@ const AdminReports = () => {
   const handleDragEnd = async (event) => {
     const { active, over } = event;
     const activeContainer = findContainer(active.id);
-    setActiveId(null);
-
-    if (!over) return;
+    
+    if (!over) {
+      setActiveId(null);
+      setActiveOriginalContainer(null);
+      return;
+    }
+    
     const overContainer = findContainer(over.id);
 
     if (activeContainer && overContainer && activeContainer === overContainer) {
@@ -183,13 +210,36 @@ const AdminReports = () => {
       }
     }
 
-    // Si se movió a "resolved", llamamos a la API
-    if (activeContainer !== 'resolved' && overContainer === 'resolved') {
+    // Sincronización con Backend
+    if (activeOriginalContainer && overContainer && activeOriginalContainer !== overContainer) {
       try {
-        await resolveReport(active.id);
+        if (overContainer === 'resolved') {
+          await resolveReport(active.id);
+        } else {
+          await updateReportStatus(active.id, overContainer);
+        }
       } catch (err) {
-        console.error("Error resolviendo reporte:", err);
+        console.error("Error actualizando reporte:", err);
       }
+    }
+    
+    setActiveId(null);
+    setActiveOriginalContainer(null);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('¿Estás seguro de que deseas eliminar este reporte de forma permanente?')) return;
+    try {
+      await deleteReport(id);
+      setColumns((prev) => {
+        const next = { ...prev };
+        Object.keys(next).forEach(key => {
+          next[key] = next[key].filter(r => r.id !== id);
+        });
+        return next;
+      });
+    } catch (err) {
+      alert(getApiErrorMessage(err));
     }
   };
 
@@ -243,27 +293,18 @@ const AdminReports = () => {
                     <Badge variant="muted" className="ml-auto bg-white/50">{items.length}</Badge>
                   </div>
 
-                  <div className="flex-1 rounded-2xl bg-secondary-bg/30 p-3 border border-border-light/50">
+                  <DroppableColumn id={colKey}>
                     <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
-                      <AnimatePresence>
-                        {items.map((report) => (
-                          <motion.div 
-                            key={report.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.9 }}
-                          >
-                            <SortableReportCard id={report.id} report={report} />
-                          </motion.div>
-                        ))}
-                      </AnimatePresence>
+                      {items.map((report) => (
+                        <SortableReportCard key={report.id} id={report.id} report={report} onDelete={handleDelete} />
+                      ))}
                     </SortableContext>
                     {items.length === 0 && (
-                      <div className="h-32 flex items-center justify-center border-2 border-dashed border-border rounded-xl">
+                      <div className="flex-1 flex items-center justify-center border-2 border-dashed border-border rounded-xl">
                         <span className="text-xs font-medium text-text-muted">Arrastra reportes aquí</span>
                       </div>
                     )}
-                  </div>
+                  </DroppableColumn>
                 </div>
               );
             })}

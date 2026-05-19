@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, PlusCircle, FileText, Bell, User, Settings, HelpCircle } from 'lucide-react';
+import { Home, PlusCircle, FileText, Bell, User, Settings, HelpCircle, Map as MapIcon } from 'lucide-react';
 import Sidebar from '../components/common/Sidebar';
 import TopHeader from '../components/common/TopHeader';
 
 const citizenLinks = [
   { path: '/dashboard', label: 'Panel Principal', icon: Home, exact: true },
+  { path: '/radar', label: 'Radar Ciudadano', icon: MapIcon, exact: false },
   { path: '/report/new', label: 'Nuevo Reporte', icon: PlusCircle, exact: false },
   { path: '/reports', label: 'Mis Reportes', icon: FileText, exact: false },
   { path: '/notifications', label: 'Notificaciones', icon: Bell, exact: false },
@@ -17,6 +18,7 @@ const citizenLinks = [
 
 const pageTitles = {
   '/dashboard': 'Panel Ciudadano',
+  '/radar': 'Radar de la Comunidad',
   '/report/new': 'Crear Reporte',
   '/reports': 'Mis Reportes',
   '/notifications': 'Notificaciones',

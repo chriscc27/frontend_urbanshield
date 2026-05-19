@@ -1,11 +1,12 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Clock, AlertTriangle, Image as ImageIcon, Calendar, Radio, ShieldCheck, CheckCircle } from 'lucide-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { ArrowLeft, MapPin, Clock, AlertTriangle, Image as ImageIcon, Calendar, Radio, ShieldCheck, CheckCircle, Trash2, ThumbsUp, ThumbsDown } from 'lucide-react';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
-import { getReport } from '../../services/reportsApi';
+import { getReport, deleteReport } from '../../services/reportsApi';
 import { useAsyncData } from '../../hooks/useAsyncData';
+import { getApiErrorMessage } from '../../services/api';
 import {
   formatDate,
   getCategoryMeta,
@@ -16,6 +17,7 @@ import {
 
 const ReportDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { data: raw, loading, error } = useAsyncData(() => getReport(id), [id]);
 
   if (loading) {
@@ -43,6 +45,21 @@ const ReportDetails = () => {
     coords: `${Math.abs(raw.latitude).toFixed(4)}° ${raw.latitude < 0 ? 'S' : 'N'}, ${Math.abs(raw.longitude).toFixed(4)}° ${raw.longitude < 0 ? 'W' : 'E'}`,
     description: raw.description,
     imageUrl: raw.imageUrl,
+    upvotes: Array.isArray(raw.upvotes) ? raw.upvotes.length : 0,
+    downvotes: Array.isArray(raw.downvotes) ? raw.downvotes.length : 0,
+  };
+
+  const totalVotes = report.upvotes + report.downvotes;
+  const trustPercentage = totalVotes > 0 ? Math.round((report.upvotes / totalVotes) * 100) : 0;
+
+  const handleDelete = async () => {
+    if (!window.confirm('¿Estás seguro de que deseas eliminar este reporte de forma permanente?')) return;
+    try {
+      await deleteReport(report.id);
+      navigate('/reports', { replace: true });
+    } catch (err) {
+      alert(getApiErrorMessage(err));
+    }
   };
 
   const timelineSteps = [
@@ -50,35 +67,43 @@ const ReportDetails = () => {
       id: 1,
       type: 'action',
       title: 'Reporte Enviado',
-      desc: 'El ciudadano registró el incidente en la plataforma.',
+      desc: 'El incidente fue registrado en el sistema.',
       time: formatDate(raw.createdAt),
       done: true,
-    },
-    {
+    }
+  ];
+
+  if (raw.status === 'in_progress' || raw.status === 'dispatched') {
+    timelineSteps.push({
       id: 2,
       type: 'system',
-      title: 'En Revisión',
-      desc: 'Las autoridades han recibido el reporte y lo están evaluando.',
-      time: raw.status !== 'pending' ? formatDate(raw.updatedAt) : 'Pendiente',
-      done: raw.status !== 'pending',
-    },
-    {
+      title: 'En Atención',
+      desc: 'Las autoridades están gestionando y respondiendo a este reporte.',
+      time: formatDate(raw.updatedAt),
+      done: true,
+    });
+  }
+
+  if (raw.status === 'resolved') {
+    // Si saltó directo a resuelto, añadimos el intermedio para dar contexto, o solo mostramos resuelto.
+    timelineSteps.push({
       id: 3,
-      type: 'system',
-      title: 'Unidad Despachada',
-      desc: 'Se asignó una unidad de respuesta al incidente.',
-      time: ['dispatched', 'resolved'].includes(raw.status) ? formatDate(raw.updatedAt) : 'Pendiente',
-      done: ['dispatched', 'resolved'].includes(raw.status),
-    },
-    {
-      id: 4,
       type: 'success',
       title: 'Resuelto',
-      desc: 'El incidente fue atendido y dado por resuelto.',
-      time: raw.status === 'resolved' ? formatDate(raw.updatedAt) : 'Pendiente',
-      done: raw.status === 'resolved',
-    },
-  ];
+      desc: 'El incidente ha sido atendido y marcado como resuelto.',
+      time: formatDate(raw.updatedAt),
+      done: true,
+    });
+  } else if (raw.status === 'pending') {
+    timelineSteps.push({
+      id: 2,
+      type: 'system',
+      title: 'En Espera',
+      desc: 'El reporte está en la cola para ser asignado a una unidad.',
+      time: 'Pendiente',
+      done: false,
+    });
+  }
 
   const statusBadge = <Badge variant={getStatusBadgeVariant(raw.status)} dot>{report.status}</Badge>;
 
@@ -104,9 +129,14 @@ const ReportDetails = () => {
             <span className="font-semibold text-text-primary">{report.category}</span>
           </p>
         </div>
-        <Button variant="muted" leftIcon={<AlertTriangle className="h-4 w-4" />} size="sm">
-          Añadir Información
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="danger" leftIcon={<Trash2 className="h-4 w-4" />} size="sm" onClick={handleDelete}>
+            Eliminar
+          </Button>
+          <Button variant="muted" leftIcon={<AlertTriangle className="h-4 w-4" />} size="sm">
+            Añadir Info
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -181,6 +211,35 @@ const ReportDetails = () => {
                   <ImageIcon className="h-10 w-10 mb-3 opacity-40" />
                   <p className="text-sm font-medium">Sin evidencia fotográfica</p>
                   <p className="text-xs mt-1 opacity-70">El ciudadano no adjuntó imágenes al reporte</p>
+                </div>
+              )}
+
+              {/* Nivel de Confianza / Validación */}
+              <h4 className="font-semibold text-text-primary text-sm mb-2 mt-6 border-t border-border-light pt-4 flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-success" />
+                Validación de la Comunidad
+              </h4>
+              
+              {totalVotes === 0 ? (
+                <p className="text-xs text-text-muted mt-2">Aún no hay votos de la comunidad para este reporte.</p>
+              ) : (
+                <div className="mt-3">
+                  <div className="flex justify-between items-center text-xs mb-1.5">
+                    <span className="font-semibold text-text-secondary">Nivel de Credibilidad</span>
+                    <span className="font-bold text-text-primary">{trustPercentage}%</span>
+                  </div>
+                  <div className="h-2 w-full bg-border-light rounded-full overflow-hidden flex">
+                    <div className="h-full bg-success transition-all duration-500" style={{ width: `${trustPercentage}%` }} />
+                    <div className="h-full bg-danger transition-all duration-500" style={{ width: `${100 - trustPercentage}%` }} />
+                  </div>
+                  <div className="flex items-center gap-4 mt-3">
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-success bg-success/10 px-2 py-1 rounded-md">
+                      <ThumbsUp className="h-3.5 w-3.5" /> {report.upvotes} Confirmaciones
+                    </div>
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-danger bg-danger/10 px-2 py-1 rounded-md">
+                      <ThumbsDown className="h-3.5 w-3.5" /> {report.downvotes} Rechazos
+                    </div>
+                  </div>
                 </div>
               )}
             </CardContent>

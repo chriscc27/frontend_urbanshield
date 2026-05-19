@@ -15,6 +15,11 @@ export const getReport = async (id) => {
   return data.data;
 };
 
+export const getPublicReport = async (id) => {
+  const { data } = await api.get(`/reports/${id}/public`);
+  return data.data;
+};
+
 export const updateReportStatus = async (id, status, notes) => {
   const { data } = await api.patch(`/reports/${id}/status`, { status, notes });
   return data.data;
@@ -22,6 +27,16 @@ export const updateReportStatus = async (id, status, notes) => {
 
 export const resolveReport = async (id) => {
   const { data } = await api.post(`/reports/${id}/resolve`);
+  return data.data;
+};
+
+export const voteReport = async (id, voteType) => {
+  const { data } = await api.post(`/reports/${id}/vote`, { voteType });
+  return data.data;
+};
+
+export const deleteReport = async (id) => {
+  const { data } = await api.delete(`/reports/${id}`);
   return data.data;
 };
 

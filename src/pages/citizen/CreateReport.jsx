@@ -308,7 +308,13 @@ const CreateReport = () => {
                         color: '#dc2626',
                       }]}
                       centerOnUserLocation={true}
+                      onMapClick={(loc) => setForm((prev) => ({ ...prev, latitude: loc.latitude, longitude: loc.longitude }))}
                     />
+                    <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20">
+                      <span className="bg-black/60 text-white text-[10px] px-2 py-1 rounded-full backdrop-blur-sm pointer-events-none">
+                        Toca el mapa para mover el pin
+                      </span>
+                    </div>
                     <div className="absolute bottom-4 right-4 z-20">
                       <Button type="button" variant="primary" size="sm" onClick={useMyLocation} className="shadow-lg backdrop-blur-sm bg-primary/90">
                         <MapPin className="h-4 w-4 mr-2" /> Centrar Mapa
