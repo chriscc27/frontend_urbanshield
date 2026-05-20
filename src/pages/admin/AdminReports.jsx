@@ -28,6 +28,7 @@ import { listReports, resolveReport, deleteReport, updateReportStatus } from '..
 import { useAsyncData } from '../../hooks/useAsyncData';
 import { formatReportForList } from '../../utils/reportFormatters';
 import { getApiErrorMessage } from '../../services/api';
+import { KanbanColumnSkeleton } from '../../components/ui/Skeleton';
 
 // ─── UTILS & COMPONENTS ─────────────────────────────────────────────────────────
 
@@ -271,8 +272,10 @@ const AdminReports = () => {
       </div>
 
       {loading ? (
-        <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-[600px]">
+          <KanbanColumnSkeleton />
+          <KanbanColumnSkeleton />
+          <KanbanColumnSkeleton />
         </div>
       ) : (
         <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>

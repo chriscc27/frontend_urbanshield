@@ -63,7 +63,7 @@ const CitizenMap = () => {
       
       {/* Header Overlay */}
       <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-start pointer-events-none">
-        <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-border p-4 pointer-events-auto w-full max-w-sm">
+        <div className="bg-[color-mix(in_srgb,var(--color-card-bg)_95%,transparent)] backdrop-blur-md rounded-2xl shadow-lg border border-border p-4 pointer-events-auto w-full max-w-sm">
           <h3 className="font-bold text-text-primary font-display mb-1 flex items-center gap-2">
             <span className="h-7 w-7 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center">
               <MapIcon className="h-4 w-4 text-accent" />
@@ -80,7 +80,7 @@ const CitizenMap = () => {
         </div>
 
         <div className="flex flex-col gap-2 pointer-events-auto">
-          <Button variant="secondary" size="icon" className="shadow-md bg-white/90 backdrop-blur-sm">
+          <Button variant="secondary" size="icon" className="shadow-md bg-[color-mix(in_srgb,var(--color-card-bg)_90%,transparent)] backdrop-blur-sm">
             <Crosshair className="h-5 w-5" />
           </Button>
         </div>
@@ -108,7 +108,7 @@ const CitizenMap = () => {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 w-full max-w-sm px-4 pointer-events-auto"
           >
-            <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-border p-5">
+            <div className="bg-[color-mix(in_srgb,var(--color-card-bg)_95%,transparent)] backdrop-blur-xl rounded-3xl shadow-2xl border border-border p-5">
               <ReportPopupContent 
                 reportId={selectedReport.id} 
                 onClose={() => setSelectedReport(null)} 

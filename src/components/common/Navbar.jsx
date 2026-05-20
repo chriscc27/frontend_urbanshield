@@ -13,7 +13,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-border shadow-sm">
+    <nav className="sticky top-0 z-50 bg-[var(--color-primary-bg)]/90 backdrop-blur-md border-b border-border shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
 
@@ -70,7 +70,7 @@ const Navbar = () => {
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="md:hidden border-t border-border bg-white animate-fade-in">
+        <div className="md:hidden border-t border-border bg-[var(--color-primary-bg)] animate-fade-in">
           <div className="px-4 py-4 space-y-1">
             {links.map((link, i) => (
               <a

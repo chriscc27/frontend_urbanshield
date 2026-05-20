@@ -82,7 +82,7 @@ const AdminMap = () => {
       )}
 
       <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-start pointer-events-none">
-        <div className="w-full max-w-md bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-border overflow-hidden pointer-events-auto">
+        <div className="w-full max-w-md bg-[color-mix(in_srgb,var(--color-card-bg)_95%,transparent)] backdrop-blur-md rounded-2xl shadow-lg border border-border overflow-hidden pointer-events-auto">
           <div className="p-4 border-b border-border-light">
             <h3 className="font-bold text-text-primary font-display mb-3 flex items-center gap-2 text-sm">
               <span className="h-7 w-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
@@ -122,7 +122,7 @@ const AdminMap = () => {
                 onFocus={() => { if (suggestions.length) setShowSuggestions(true); }}
               />
               {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute mt-1 left-0 right-0 bg-white border border-border rounded-md shadow-lg z-30 max-h-60 overflow-auto">
+                <div className="absolute mt-1 left-0 right-0 bg-[var(--color-card-bg)] border border-border rounded-md shadow-lg z-30 max-h-60 overflow-auto">
                   {suggestions.map((s, i) => (
                     <div key={i} role="button" tabIndex={0} onClick={() => onSelectSuggestion(s)} onKeyDown={() => onSelectSuggestion(s)} className="px-3 py-2 text-sm hover:bg-hover cursor-pointer">
                       {s.label}
@@ -163,7 +163,7 @@ const AdminMap = () => {
         </div>
       </div>
 
-      <div className="absolute bottom-6 right-6 z-20 bg-white/95 backdrop-blur-md rounded-2xl shadow-lg border border-border overflow-hidden pointer-events-auto flex flex-col max-h-80" style={{ width: '300px' }}>
+      <div className="absolute bottom-6 right-6 z-20 bg-[color-mix(in_srgb,var(--color-card-bg)_95%,transparent)] backdrop-blur-md rounded-2xl shadow-lg border border-border overflow-hidden pointer-events-auto flex flex-col max-h-80" style={{ width: '300px' }}>
         <div className="p-3 bg-danger/8 border-b border-danger/15 flex justify-between items-center">
           <span className="font-bold text-danger text-sm flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-danger animate-pulse-subtle" />
@@ -194,7 +194,7 @@ const AdminMap = () => {
             showNavigation={false}
           />
           <div className="absolute top-4 right-4 z-30">
-            <div className="bg-white/90 text-xs px-2 py-1 rounded-full border border-border flex items-center gap-2 shadow-sm">
+            <div className="bg-[color-mix(in_srgb,var(--color-card-bg)_90%,transparent)] text-xs px-2 py-1 rounded-full border border-border flex items-center gap-2 shadow-sm">
               <span className="h-2 w-2 rounded-full bg-primary" />
               <span>Amazon Location</span>
             </div>

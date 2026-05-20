@@ -23,7 +23,7 @@ const Button = React.forwardRef(({
     ].join(' '),
 
     secondary: [
-      "bg-white text-text-primary border border-border",
+      "bg-transparent text-text-primary border border-border",
       "hover:bg-hover hover:border-border-strong",
       "focus:ring-border/60 focus:ring-offset-white",
       "shadow-sm",

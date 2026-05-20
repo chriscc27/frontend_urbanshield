@@ -178,7 +178,7 @@ const AwsLocationMap = ({
 
   if (!config) {
     return (
-      <div className={`flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-border bg-white/80 ${className}`.trim()}>
+      <div className={`flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-border bg-[var(--color-card-bg)] ${className}`.trim()}>
         <div className="max-w-md text-center p-6">
           <p className="text-sm font-semibold text-text-primary">Falta configurar Amazon Location</p>
           <p className="mt-2 text-xs text-text-muted">

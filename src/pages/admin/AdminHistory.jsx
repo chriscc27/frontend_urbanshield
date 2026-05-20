@@ -5,6 +5,7 @@ import { listReports } from '../../services/reportsApi';
 import Badge from '../../components/ui/Badge';
 import { Clock, CheckCircle, ShieldAlert, XCircle, Search, ThumbsUp, ThumbsDown } from 'lucide-react';
 import Input from '../../components/ui/Input';
+import { ReportListItemSkeleton } from '../../components/ui/Skeleton';
 
 const statusConfig = {
   pending: { label: 'Pendiente', color: 'warning', icon: Clock },
@@ -58,9 +59,12 @@ const AdminHistory = () => {
             </div>
           )}
           {loading && !error ? (
-            <div className="p-12 text-center flex flex-col items-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
-              <p className="text-text-muted">Cargando historial completo...</p>
+            <div className="p-4 space-y-3">
+              <ReportListItemSkeleton />
+              <ReportListItemSkeleton />
+              <ReportListItemSkeleton />
+              <ReportListItemSkeleton />
+              <ReportListItemSkeleton />
             </div>
           ) : !error && (
             <table className="w-full text-left text-sm whitespace-nowrap">

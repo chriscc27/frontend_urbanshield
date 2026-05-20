@@ -11,6 +11,8 @@ import { useAuth } from '../../context/AuthContext';
 import { getMapMarkers } from '../../services/locationApi';
 import { formatReportForList, getStatusBadgeVariant, getCategoryMeta } from '../../utils/reportFormatters';
 import AwsLocationMap from '../../components/common/AwsLocationMap';
+import { ReportListItemSkeleton } from '../../components/ui/Skeleton';
+import OnboardingTour from '../../components/ui/OnboardingTour';
 
 const categoryIconMap = {
   'Incendio':         { icon: Flame,        color: 'text-danger',     bg: 'bg-danger/8 border-danger/15' },
@@ -112,13 +114,21 @@ const CitizenDashboard = () => {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
+      <OnboardingTour 
+        steps={[
+          { targetId: 'tour-trust', title: 'Tu Reputación', content: 'Aquí verás tu Nivel de Confianza y puntos. ¡Ganas puntos al reportar incidentes verídicos y validar los de otros!' },
+          { targetId: 'tour-map', title: 'Radar Ciudadano', content: 'En este mapa verás los incidentes confirmados cerca de ti en tiempo real.' },
+          { targetId: 'tour-report', title: 'Crear Reportes', content: 'Si ves una emergencia, presiona aquí. Tu reporte alertará inmediatamente a la comunidad y autoridades.' }
+        ]}
+        onComplete={() => console.log('Tour finished')}
+      />
       {error && <p className="text-sm text-danger bg-danger/10 border border-danger/20 rounded-xl px-3 py-2">{error}</p>}
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <p className="text-text-muted text-sm">Buenos días,</p>
           <h2 className="text-2xl font-bold text-text-primary font-display">{user?.name || 'Ciudadano'} 👋</h2>
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center gap-2 mt-2" id="tour-trust">
             <Badge variant={user?.trustScore >= 80 ? 'success' : user?.trustScore < 20 ? 'danger' : 'accent'} className="px-2.5 py-1">
               <span className="flex items-center gap-1.5 font-semibold">
                 {user?.trustScore >= 80 ? '🌟 Ciudadano Ejemplar' : user?.trustScore < 20 ? '⚠️ En Observación' : '⭐ Ciudadano Activo'}
@@ -138,7 +148,7 @@ const CitizenDashboard = () => {
               )}
             </Button>
           </Link>
-          <Link to="/report/new">
+          <Link to="/report/new" id="tour-report">
             <Button leftIcon={<Plus className="h-4 w-4" />}>Nuevo Reporte</Button>
           </Link>
         </div>
@@ -169,7 +179,7 @@ const CitizenDashboard = () => {
       {/* Main Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Map Widget */}
-        <div className="xl:col-span-2">
+        <div className="xl:col-span-2" id="tour-map">
           <Card className="h-full">
             <CardHeader>
               <div className="flex justify-between items-center">
@@ -204,11 +214,17 @@ const CitizenDashboard = () => {
           <Card className="flex-1">
             <CardHeader><CardTitle>Tus Reportes Recientes</CardTitle></CardHeader>
             <CardContent className="space-y-2 p-4">
-              {loading && <p className="text-sm text-text-muted px-2">Cargando reportes...</p>}
+              {loading && (
+                <>
+                  <ReportListItemSkeleton />
+                  <ReportListItemSkeleton />
+                  <ReportListItemSkeleton />
+                </>
+              )}
               {!loading && recentReports.length === 0 && (
                 <p className="text-sm text-text-muted px-2">Aún no tienes reportes registrados.</p>
               )}
-              {recentReports.map((incident) => {
+              {!loading && recentReports.map((incident) => {
                 const config = categoryIconMap[incident.type] || { icon: Activity, color: 'text-text-muted', bg: 'bg-muted border-border' };
                 const Icon = config.icon;
                 return (
