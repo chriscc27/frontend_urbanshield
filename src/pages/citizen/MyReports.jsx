@@ -8,6 +8,7 @@ import Badge from '../../components/ui/Badge';
 import { listReports } from '../../services/reportsApi';
 import { useAsyncData } from '../../hooks/useAsyncData';
 import { formatReportForList, getStatusBadgeVariant } from '../../utils/reportFormatters';
+import { ReportListItemSkeleton, CardSkeleton } from '../../components/ui/Skeleton';
 
 const MyReports = () => {
   const [search, setSearch] = useState('');
@@ -28,7 +29,6 @@ const MyReports = () => {
   return (
     <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
       {error && <p className="text-sm text-danger bg-danger/10 border border-danger/20 rounded-xl px-3 py-2">{error}</p>}
-      {loading && <p className="text-sm text-text-secondary">Cargando reportes...</p>}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold text-text-primary font-display">Mis Reportes</h2>
@@ -46,7 +46,7 @@ const MyReports = () => {
             <Input placeholder="Buscar por ID, título..." leftIcon={<Search className="h-4 w-4" />} value={search} onChange={(e) => setSearch(e.target.value)} className="py-2" />
           </div>
           <div className="flex items-center gap-2 flex-shrink-0 w-full sm:w-auto justify-end">
-            <select className="text-sm bg-white border border-border text-text-secondary rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/50 shadow-sm">
+            <select className="text-sm bg-transparent border border-border text-text-secondary rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/50 shadow-sm">
               <option>Todos los estados</option>
               <option>En Progreso</option>
               <option>Pendiente</option>
@@ -56,7 +56,7 @@ const MyReports = () => {
             <div className="flex items-center gap-1 p-1 bg-muted border border-border-light rounded-xl">
               {[{ icon: List, v: 'table' }, { icon: Grid, v: 'grid' }].map(({ icon: Icon, v }) => (
                 <button key={v} onClick={() => setView(v)}
-                  className={`p-1.5 rounded-lg transition-colors ${view === v ? 'bg-white text-primary shadow-sm border border-border' : 'text-text-muted hover:text-text-secondary'}`}>
+                  className={`p-1.5 rounded-lg transition-colors ${view === v ? 'bg-[var(--color-card-bg)] text-primary shadow-sm border border-border' : 'text-text-muted hover:text-text-secondary'}`}>
                   <Icon className="h-4 w-4" />
                 </button>
               ))}
@@ -84,6 +84,12 @@ const MyReports = () => {
                   <tr><td colSpan={5} className="py-16 text-center">
                     <AlertCircle className="h-10 w-10 text-text-muted mx-auto mb-3 opacity-30" />
                     <p className="text-text-secondary text-sm">No se encontraron reportes.</p>
+                  </td></tr>
+                ) : loading ? (
+                  <tr><td colSpan={5} className="p-0 border-none bg-transparent">
+                    <ReportListItemSkeleton />
+                    <ReportListItemSkeleton />
+                    <ReportListItemSkeleton />
                   </td></tr>
                 ) : filtered.map((report) => (
                   <tr key={report.id} className="hover:bg-hover transition-colors">
@@ -126,7 +132,13 @@ const MyReports = () => {
       {/* Grid View */}
       {view === 'grid' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((report) => (
+          {loading ? (
+            <>
+              <CardSkeleton />
+              <CardSkeleton />
+              <CardSkeleton />
+            </>
+          ) : filtered.map((report) => (
             <Card key={report.id} hover>
               <CardContent className="p-5">
                 <div className="flex justify-between items-start mb-3">

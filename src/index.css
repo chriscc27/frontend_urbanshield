@@ -62,6 +62,27 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* ── Dark Mode Overrides ── */
+  .dark {
+    --color-primary-bg:    #111827;
+    --color-secondary-bg:  #1F2937;
+    --color-card-bg:       #1F2937;
+    --color-muted:         #374151;
+    --color-hover:         #374151;
+
+    --color-sidebar-bg:    #0F172A;
+    --color-sidebar-hover: #1E293B;
+    --color-sidebar-active:#334155;
+    
+    --color-text-primary:   #F9FAFB;
+    --color-text-secondary: #D1D5DB;
+    --color-text-muted:     #9CA3AF;
+    
+    --color-border:        #4B5563;
+    --color-border-light:  #374151;
+    --color-border-strong: #6B7280;
+  }
+
   body {
     @apply bg-primary-bg text-text-primary font-sans;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
@@ -134,10 +155,10 @@
 
 /* ─── Utility Classes ──────────────────────────────────────── */
 @layer utilities {
-  /* Light card surface */
+  /* Light/Dark card surface */
   .surface-card {
-    background: #FFFFFF;
-    border: 1px solid #E7E5E4;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border-light);
     box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   }
 
@@ -149,10 +170,10 @@
 
   /* Header surface */
   .surface-header {
-    background: rgba(255,255,255,0.92);
+    background: color-mix(in srgb, var(--color-card-bg) 92%, transparent);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid #E7E5E4;
+    border-bottom: 1px solid var(--color-border-light);
   }
 
   /* Gradient text (green → accent) */
@@ -178,8 +199,8 @@
 
   /* Premium inset */
   .inset-surface {
-    background: #F8F6F1;
-    border: 1px solid #E7E5E4;
+    background: var(--color-primary-bg);
+    border: 1px solid var(--color-border-light);
     border-radius: 12px;
   }
 }

@@ -12,7 +12,7 @@ const Badge = ({ children, variant = 'default', dot = false, className }) => {
     warning:  'bg-warning/10 text-warning border border-warning/20',
     muted:    'bg-muted text-text-muted border border-border-light',
     outline:  'bg-transparent text-text-secondary border border-border',
-    white:    'bg-white text-text-primary border border-border shadow-sm',
+    white:    'bg-[var(--color-card-bg)] text-text-primary border border-border shadow-sm',
   };
 
   const dotColors = {

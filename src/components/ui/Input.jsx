@@ -26,7 +26,7 @@ const Input = React.forwardRef(({
           ref={ref}
           className={twMerge(clsx(
             "block w-full rounded-xl text-text-primary text-sm transition-all duration-150",
-            "bg-white border border-border",
+            "bg-transparent border border-border",
             "placeholder:text-text-muted",
             "focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/60",
             "hover:border-border-strong",

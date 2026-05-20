@@ -29,6 +29,8 @@ const AwsLocationMap = ({
   centerOnUserLocation = true,
   userLocationZoom = 14,
   showUserLocationMarker = true,
+  onMapClick,
+  onMarkerClick,
 }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
@@ -78,8 +80,8 @@ const AwsLocationMap = ({
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
       style: config.styleUrl,
-      center,
-      zoom,
+      center: center, // Usamos el valor inicial
+      zoom: zoom,
       preserveDrawingBuffer,
       attributionControl: showAttribution,
     });
@@ -93,6 +95,12 @@ const AwsLocationMap = ({
       setUserLocation(map);
       if (typeof onMapReady === 'function') onMapReady(map);
     });
+
+    if (onMapClick) {
+      map.on('click', (e) => {
+        onMapClick({ latitude: e.lngLat.lat, longitude: e.lngLat.lng });
+      });
+    }
 
     const resize = () => {
       try {
@@ -116,7 +124,15 @@ const AwsLocationMap = ({
       map.remove();
       mapRef.current = null;
     };
-  }, [center, centerOnUserLocation, config, onMapReady, preserveDrawingBuffer, showAttribution, showNavigation, userLocationZoom, showUserLocationMarker, zoom]);
+  }, [config, onMapReady, preserveDrawingBuffer, showAttribution, showNavigation, showUserLocationMarker]); // Quitamos center y zoom para evitar recrear el mapa
+
+  // Efecto para actualizar el centro sin recrear el mapa
+  useEffect(() => {
+    if (mapRef.current && center && center.length === 2) {
+      mapRef.current.flyTo({ center, zoom, duration: 800 });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [center?.[0], center?.[1], zoom]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -135,12 +151,20 @@ const AwsLocationMap = ({
       markerElement.style.border = '2px solid white';
       markerElement.style.boxShadow = '0 4px 14px rgba(0, 0, 0, 0.22)';
       markerElement.style.background = point.color || '#dc2626';
+      
+      if (onMarkerClick) {
+        markerElement.style.cursor = 'pointer';
+        markerElement.addEventListener('click', (e) => {
+          e.stopPropagation();
+          onMarkerClick(point.rawData || point);
+        });
+      }
 
       const marker = new maplibregl.Marker({ element: markerElement, anchor: 'center' })
         .setLngLat([point.longitude, point.latitude])
         .addTo(map);
 
-      if (point.popupHtml) {
+      if (point.popupHtml && !onMarkerClick) {
         marker.setPopup(
           new maplibregl.Popup({ offset: 18, closeButton: true, closeOnClick: true }).setHTML(point.popupHtml),
         );
@@ -154,7 +178,7 @@ const AwsLocationMap = ({
 
   if (!config) {
     return (
-      <div className={`flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-border bg-white/80 ${className}`.trim()}>
+      <div className={`flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-border bg-[var(--color-card-bg)] ${className}`.trim()}>
         <div className="max-w-md text-center p-6">
           <p className="text-sm font-semibold text-text-primary">Falta configurar Amazon Location</p>
           <p className="mt-2 text-xs text-text-muted">
