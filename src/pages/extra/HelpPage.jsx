@@ -17,7 +17,7 @@ const faqsData = [
   { id: '9', q: '¿Qué son las Alertas de Zonas Cercanas?', a: 'Es una función en tu Configuración que, si la activas, te enviará notificaciones inmediatas si se reporta y verifica un incidente a menos de 5 km de tu ubicación GPS actual.' },
   { id: '10', q: '¿Por qué desapareció mi reporte del mapa?', a: 'Si un reporte es marcado como falso o resuelto por un administrador, se oculta del mapa público (Radar Ciudadano) para no causar pánico o desinformación. Aún podrás verlo en tu historial personal.' },
   { id: '11', q: '¿Cómo recupero mi contraseña?', a: 'En la pantalla de Inicio de Sesión, presiona "Olvidé mi contraseña". Te enviaremos un correo con un enlace seguro para restablecerla. Asegúrate de revisar tu bandeja de Spam.' },
-  { id: '12', q: '¿Qué es la Autenticación 2FA?', a: 'La Autenticación de Dos Factores (2FA) añade una capa extra de seguridad. Además de tu contraseña, necesitarás un código temporal que se envía a tu correo para acceder a UrbanShield.' }
+  { id: '12', q: '¿Qué es la Autenticación 2FA?', a: 'La Autenticación de Dos Factores (2FA) añade una capa extra de seguridad. Además de tu contraseña, necesitarás un código temporal que se envía a tu correo para acceder a Halo.' }
 ];
 
 const HelpPage = () => {

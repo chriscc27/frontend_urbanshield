@@ -25,7 +25,7 @@ const AdminLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
-  const getTitle = () => pageTitles[location.pathname] || 'Administración UrbanShield';
+  const getTitle = () => pageTitles[location.pathname] || 'Administración Halo';
 
   return (
     <div className="flex h-screen bg-primary-bg overflow-hidden" style={{ fontFamily: 'Inter, Poppins, sans-serif' }}>

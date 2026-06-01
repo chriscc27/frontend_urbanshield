@@ -3,7 +3,7 @@ export const TESTIMONIALS = [
     id: 1,
     name: 'Cdte. Roberto Álvarez',
     role: 'Bomberos Municipales',
-    text: 'UrbanShield ha reducido nuestro tiempo de respuesta en un 40%. La geolocalización precisa es invaluable en emergencias reales.',
+    text: 'Halo ha reducido nuestro tiempo de respuesta en un 40%. La geolocalización precisa es invaluable en emergencias reales.',
   },
   {
     id: 2,

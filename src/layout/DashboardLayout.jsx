@@ -35,7 +35,7 @@ const DashboardLayout = () => {
     const path = location.pathname;
     if (pageTitles[path]) return pageTitles[path];
     if (path.startsWith('/reports/')) return 'Detalles del Reporte';
-    return 'UrbanShield';
+    return 'Halo';
   };
 
   return (

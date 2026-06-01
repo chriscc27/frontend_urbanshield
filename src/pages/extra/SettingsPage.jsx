@@ -113,7 +113,7 @@ const SettingsPage = () => {
       <div className="flex justify-between items-end">
         <div>
           <h2 className="text-2xl font-bold text-text-primary font-display">Configuración</h2>
-          <p className="text-text-secondary text-sm mt-1">Personaliza tu experiencia en UrbanShield.</p>
+          <p className="text-text-secondary text-sm mt-1">Personaliza tu experiencia en Halo.</p>
         </div>
       </div>
 

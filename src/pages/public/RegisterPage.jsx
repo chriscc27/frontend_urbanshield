@@ -1,9 +1,27 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, User, Mail, Lock, Phone, Eye, EyeOff, Check } from 'lucide-react';
-import Input from '../../components/ui/Input';
+import { Shield, User, Mail, Lock, Phone, Eye, EyeOff, Check, ArrowRight } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import { useAuth, getApiErrorMessage } from '../../context/AuthContext';
+
+const GlassInput = ({ icon: Icon, rightIcon, ...props }) => (
+  <div className="relative">
+    {Icon && (
+      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+        <Icon className="h-5 w-5 text-text-muted" />
+      </div>
+    )}
+    <input 
+      {...props}
+      className={`w-full ${Icon ? 'pl-11' : 'pl-4'} ${rightIcon ? 'pr-11' : 'pr-4'} py-3.5 bg-white/50 border border-border-light rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-text-primary placeholder:text-text-muted font-medium outline-none shadow-sm`}
+    />
+    {rightIcon && (
+      <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
+        {rightIcon}
+      </div>
+    )}
+  </div>
+);
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -12,11 +30,7 @@ const RegisterPage = () => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState('');
   const [form, setForm] = React.useState({
-    name: '',
-    phone: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    name: '', phone: '', email: '', password: '', confirmPassword: '',
   });
 
   const handleChange = (e) => {
@@ -34,10 +48,7 @@ const RegisterPage = () => {
     setError('');
     try {
       const user = await register({
-        name: form.name,
-        email: form.email,
-        password: form.password,
-        phone: form.phone || undefined,
+        name: form.name, email: form.email, password: form.password, phone: form.phone || undefined,
       });
       navigate(user.role === 'admin' ? '/admin' : '/dashboard', { replace: true });
     } catch (err) {
@@ -55,147 +66,117 @@ const RegisterPage = () => {
   ];
 
   return (
-    <div className="min-h-[calc(100vh-64px)] grid lg:grid-cols-2">
+    <div className="min-h-screen w-full relative flex items-center justify-center bg-primary-bg overflow-hidden selection:bg-primary/20 p-4 py-12">
+      
+      {/* ── IMMERSIVE BACKGROUND ── */}
+      <div className="noise-overlay" />
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-[#2F5D50]/10 rounded-full blur-[120px] mix-blend-multiply aurora-orb-1" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-[#D6A663]/15 rounded-full blur-[150px] mix-blend-multiply aurora-orb-2" />
+      </div>
 
-      {/* ─── Left: Benefits panel ──────────────────────── */}
-      <div className="hidden lg:flex flex-col justify-between p-12 relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #2F5D50 0%, #3A7060 60%, #4C9F70 100%)' }}
-      >
-        {/* Dot pattern */}
-        <div className="absolute inset-0 pointer-events-none opacity-15"
-          style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.4) 1px, transparent 0)', backgroundSize: '28px 28px' }}
-        />
-        {/* Glow */}
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-white/5 rounded-full blur-3xl" />
+      <Link to="/" className="absolute top-8 left-8 flex items-center gap-2.5 group z-50">
+        <div className="h-10 w-10 rounded-xl glass-premium flex items-center justify-center transition-all group-hover:scale-105 shadow-md">
+          <Shield className="h-5 w-5 text-primary" />
+        </div>
+        <span className="font-display font-bold text-xl tracking-tight text-text-primary hidden sm:block">Halo</span>
+      </Link>
 
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-12">
-            <div className="h-10 w-10 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center">
-              <Shield className="h-5 w-5 text-white" />
-            </div>
-            <span className="font-display font-bold text-xl text-white">Urban<span className="text-accent-light">Shield</span></span>
+      {/* ── GLASS CONTAINER ── */}
+      <div className="relative z-10 w-full max-w-[1100px] glass-premium rounded-[2.5rem] md:rounded-[3rem] p-2 md:p-4 flex flex-col lg:flex-row shadow-2xl border border-white/60">
+        
+        {/* Left Side: Branding & Benefits */}
+        <div className="lg:w-5/12 p-8 lg:p-12 flex flex-col justify-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-6 w-max">
+            Registro Seguro
           </div>
-
-          <h2 className="text-4xl font-bold text-white font-display leading-tight mb-6">
-            Únete a la red<br />de seguridad<br />
-            <span style={{ color: '#D6A663' }}>ciudadana.</span>
-          </h2>
-          <p className="text-white/70 text-lg leading-relaxed max-w-sm mb-10">
-            Más de 12,000 ciudadanos activos ayudando a construir comunidades más seguras.
+          <h1 className="text-4xl md:text-5xl font-bold text-text-primary font-display leading-[1.1] tracking-tighter mb-4">
+            Únete a la red<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">de seguridad ciudadana.</span>
+          </h1>
+          <p className="text-text-secondary text-lg leading-relaxed mb-10">
+            Más de 15,000 ciudadanos activos ayudando a construir comunidades más seguras e interconectadas.
           </p>
 
-          <ul className="space-y-4">
+          <ul className="space-y-5">
             {benefits.map((b, i) => (
-              <li key={i} className="flex items-center gap-3">
-                <div className="h-6 w-6 rounded-full bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0">
-                  <Check className="h-3.5 w-3.5 text-white" />
+              <li key={i} className="flex items-center gap-4 group">
+                <div className="h-8 w-8 rounded-full bg-white/60 shadow-sm border border-border-light flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:border-primary transition-colors">
+                  <Check className="h-4 w-4 text-primary group-hover:text-white transition-colors" />
                 </div>
-                <span className="text-white/80 text-sm">{b}</span>
+                <span className="text-text-primary font-medium text-sm group-hover:text-primary-dark transition-colors">{b}</span>
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="relative z-10 p-4 rounded-xl backdrop-blur" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)' }}>
-          <p className="text-xs text-white/60 mb-1">Incidente resuelto en</p>
-          <p className="text-2xl font-bold font-display" style={{ color: '#D6A663' }}>14 minutos</p>
-          <p className="text-xs text-white/50 mt-1">Promedio de respuesta · Última semana</p>
-        </div>
-      </div>
-
-      {/* ─── Right: Registration Form ───────────────────── */}
-      <div className="flex items-center justify-center p-6 lg:p-12 bg-primary-bg">
-        <div className="w-full max-w-md animate-fade-in">
-          <div className="flex items-center gap-2.5 mb-8 lg:hidden">
-            <div className="h-9 w-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-              <Shield className="h-5 w-5 text-primary" />
-            </div>
-            <span className="font-display font-bold text-xl text-text-primary">Urban<span className="text-primary">Shield</span></span>
-          </div>
-
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-text-primary font-display">Crear una cuenta</h1>
-            <p className="text-text-secondary text-sm mt-2">Completa tus datos para comenzar</p>
-          </div>
-
+        {/* Right Side: Registration Form */}
+        <div className="lg:w-7/12 bg-white/60 backdrop-blur-md rounded-[2rem] p-8 lg:p-12 shadow-inner border border-white/80">
+          <h2 className="text-2xl font-bold text-text-primary font-display mb-8">Crear una cuenta</h2>
+          
           {error && (
-            <p className="mb-4 text-sm text-danger bg-danger/10 border border-danger/20 rounded-xl px-3 py-2">{error}</p>
+            <div className="mb-6 bg-danger/10 border border-danger/20 rounded-xl p-4 animate-fade-in">
+              <p className="text-sm text-danger font-medium">{error}</p>
+            </div>
           )}
 
-          <form onSubmit={handleRegister} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input name="name" value={form.name} onChange={handleChange} 
-                label="Nombre Completo"
-                type="text"
-                placeholder="Juan Pérez"
-                required
-                leftIcon={<User className="h-4 w-4" />}
-              />
-              <Input name="phone" value={form.phone} onChange={handleChange} 
-                label="Teléfono"
-                type="tel"
-                placeholder="+1 234 567 890"
-                leftIcon={<Phone className="h-4 w-4" />}
-              />
+          <form onSubmit={handleRegister} className="space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-sm font-bold text-text-primary mb-1.5 ml-1">Nombre Completo</label>
+                <GlassInput name="name" value={form.name} onChange={handleChange} required placeholder="Juan Pérez" icon={User} />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-text-primary mb-1.5 ml-1">Teléfono (Opcional)</label>
+                <GlassInput name="phone" value={form.phone} onChange={handleChange} type="tel" placeholder="+591 12345678" icon={Phone} />
+              </div>
             </div>
 
-            <Input name="email" value={form.email} onChange={handleChange} 
-              label="Correo Electrónico"
-              type="email"
-              placeholder="tu@email.com"
-              required
-              leftIcon={<Mail className="h-4 w-4" />}
-            />
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input name="password" value={form.password} onChange={handleChange} 
-                label="Contraseña"
-                type={showPwd ? 'text' : 'password'}
-                placeholder="Mín. 8 caracteres"
-                required
-                leftIcon={<Lock className="h-4 w-4" />}
-                rightIcon={
-                  <button type="button" onClick={() => setShowPwd(v => !v)} className="hover:text-primary transition-colors cursor-pointer">
-                    {showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                }
-              />
-              <Input name="confirmPassword" value={form.confirmPassword} onChange={handleChange} 
-                label="Confirmar Contraseña"
-                type="password"
-                placeholder="Repetir contraseña"
-                required
-                leftIcon={<Lock className="h-4 w-4" />}
-              />
+            <div>
+              <label className="block text-sm font-bold text-text-primary mb-1.5 ml-1">Correo Electrónico</label>
+              <GlassInput name="email" value={form.email} onChange={handleChange} required type="email" placeholder="tu@email.com" icon={Mail} />
             </div>
 
-            <label className="flex items-start gap-3 cursor-pointer group mt-2">
-              <input
-                type="checkbox"
-                required
-                className="rounded border-border bg-white checked:bg-primary checked:border-primary focus:ring-primary/25 focus:ring-offset-0 mt-0.5 flex-shrink-0"
-              />
-              <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors">
-                Acepto los{' '}
-                <a href="#" className="text-primary hover:text-primary-dark underline">Términos de Servicio</a>{' '}
-                y la{' '}
-                <a href="#" className="text-primary hover:text-primary-dark underline">Política de Privacidad</a>.
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-sm font-bold text-text-primary mb-1.5 ml-1">Contraseña</label>
+                <GlassInput 
+                  name="password" value={form.password} onChange={handleChange} required 
+                  type={showPwd ? 'text' : 'password'} placeholder="Mín. 8 caracteres" icon={Lock}
+                  rightIcon={
+                    <button type="button" onClick={() => setShowPwd(!showPwd)} className="text-text-muted hover:text-primary transition-colors">
+                      {showPwd ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    </button>
+                  }
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-text-primary mb-1.5 ml-1">Confirmar</label>
+                <GlassInput name="confirmPassword" value={form.confirmPassword} onChange={handleChange} required type="password" placeholder="Repetir contraseña" icon={Lock} />
+              </div>
+            </div>
+
+            <label className="flex items-start gap-3 cursor-pointer group pt-2">
+              <input type="checkbox" required className="rounded border-border bg-white checked:bg-primary checked:border-primary focus:ring-primary/25 mt-1 flex-shrink-0" />
+              <span className="text-sm text-text-secondary group-hover:text-text-primary transition-colors leading-relaxed">
+                Acepto los <a href="#" className="text-primary hover:text-primary-dark font-bold">Términos de Servicio</a> y la <a href="#" className="text-primary hover:text-primary-dark font-bold">Política de Privacidad</a>.
               </span>
             </label>
 
-            <Button type="submit" className="w-full mt-2 shadow-md shadow-primary/15" size="md" isLoading={isLoading}>
-              Crear Cuenta Gratis
-            </Button>
+            <div className="pt-4">
+              <Button type="submit" className="w-full py-4 text-base rounded-xl shadow-lg shadow-primary/20 hover:-translate-y-0.5 transition-all" size="lg" isLoading={isLoading} rightIcon={<ArrowRight className="h-5 w-5" />}>
+                Crear Cuenta Gratis
+              </Button>
+            </div>
           </form>
 
-          <p className="mt-6 text-center text-sm text-text-secondary">
+          <p className="mt-8 text-center text-sm text-text-secondary font-medium">
             ¿Ya tienes cuenta?{' '}
-            <Link to="/login" className="text-primary hover:text-primary-dark font-medium transition-colors">
-              Inicia sesión aquí
-            </Link>
+            <Link to="/login" className="text-primary hover:text-primary-dark font-bold transition-colors">Inicia sesión aquí</Link>
           </p>
         </div>
       </div>
+
     </div>
   );
 };
