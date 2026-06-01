@@ -13,7 +13,7 @@ const Footer = () => (
               <Shield className="text-primary" style={{ width: '20px', height: '20px' }} />
             </div>
             <span className="font-display font-bold text-xl text-text-primary tracking-tight">
-              Urban<span className="text-primary">Shield</span>
+              Halo
             </span>
           </Link>
           <p className="text-sm text-text-secondary leading-relaxed">
@@ -54,7 +54,7 @@ const Footer = () => (
               <MapPin className="h-4 w-4 text-primary flex-shrink-0" />Ciudad Inteligente, Zona Centro
             </li>
             <li className="flex items-center gap-2 text-sm text-text-secondary">
-              <Mail className="h-4 w-4 text-primary flex-shrink-0" />info@urbanshield.io
+              <Mail className="h-4 w-4 text-primary flex-shrink-0" />info@Halo.io
             </li>
           </ul>
           <div className="flex items-center gap-3 mt-6">
@@ -70,7 +70,7 @@ const Footer = () => (
 
       {/* Bottom bar */}
       <div className="border-t border-border pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-text-muted">
-        <p>&copy; {new Date().getFullYear()} UrbanShield. Todos los derechos reservados.</p>
+        <p>&copy; {new Date().getFullYear()} Halo. Todos los derechos reservados.</p>
         <div className="flex items-center gap-4">
           <a href="#" className="hover:text-text-secondary transition-colors">Privacidad</a>
           <a href="#" className="hover:text-text-secondary transition-colors">Términos</a>

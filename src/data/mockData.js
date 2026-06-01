@@ -12,7 +12,7 @@ export const INCIDENTS = [
 export const USERS = [
   { id: 'USR-001', name: 'Juan Pérez', email: 'juan@email.com', role: 'citizen', reports: 12, trusted: true },
   { id: 'USR-002', name: 'Ana Martínez', email: 'ana@email.com', role: 'citizen', reports: 7, trusted: true },
-  { id: 'USR-003', name: 'Admin Principal', email: 'admin@urbanshield.com', role: 'admin', reports: 0, trusted: true },
+  { id: 'USR-003', name: 'Admin Principal', email: 'admin@Halo.com', role: 'admin', reports: 0, trusted: true },
 ];
 
 // Notificaciones simuladas
@@ -45,7 +45,7 @@ export const INCIDENT_CATEGORIES = [
 
 // Testimonials
 export const TESTIMONIALS = [
-  { id: 1, name: 'Cdte. Roberto Álvarez', role: 'Bomberos Municipales', text: 'UrbanShield ha reducido nuestro tiempo de respuesta en un 40%. La geolocalización precisa es invaluable en emergencias reales.' },
+  { id: 1, name: 'Cdte. Roberto Álvarez', role: 'Bomberos Municipales', text: 'Halo ha reducido nuestro tiempo de respuesta en un 40%. La geolocalización precisa es invaluable en emergencias reales.' },
   { id: 2, name: 'Ing. Sandra Morales', role: 'Dirección de Tránsito', text: 'La plataforma nos da visibilidad total de los incidentes viales. Podemos coordinar mejor las unidades de desvío.' },
   { id: 3, name: 'Marcela Fuentes', role: 'Ciudadana activa', text: 'Reporté un incendio y en 10 minutos ya había bomberos en el lugar. Esta app definitivamente funciona.' },
 ];

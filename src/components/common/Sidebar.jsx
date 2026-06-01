@@ -56,7 +56,7 @@ const Sidebar = ({ links, isOpen, setIsOpen }) => {
             <Shield className="text-white" style={{ width: '18px', height: '18px' }} />
           </div>
           <span className="font-display font-bold text-base tracking-tight text-white">
-            Urban<span className="text-accent-light">Shield</span>
+            Halo
           </span>
         </Link>
         <button
