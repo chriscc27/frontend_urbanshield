@@ -3,6 +3,7 @@ import { AlertTriangle, Activity, CheckCircle, Clock, TrendingUp, Users, Flame, 
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Link } from 'react-router-dom';
 import { getDashboard } from '../../services/adminApi';
+import { listReports } from '../../services/reportsApi';
 import { useAsyncData } from '../../hooks/useAsyncData';
 import { formatReportForList, getStatusLabel } from '../../utils/reportFormatters';
 import Badge from '../../components/ui/Badge';
@@ -21,8 +22,25 @@ const AdminDashboard = () => {
   const { data, loading, error } = useAsyncData(() => getDashboard(), []);
   const stats = data?.stats || {};
   const criticalReports = (data?.criticalReports || []).map(formatReportForList);
-  const recentActivity = data?.recentActivity || [];
-  const chartBars = [30, 45, 20, 60, 85, 40, 55, 75, 90, 65, 50, 40];
+  
+  // Real data for trend chart
+  const { data: reportsResp } = useAsyncData(() => listReports({ limit: 1000 }), []);
+  const allReports = Array.isArray(reportsResp) ? reportsResp : reportsResp?.items || [];
+  
+  const [startDate, setStartDate] = React.useState(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
+  const [endDate, setEndDate] = React.useState(new Date().toISOString().split('T')[0]);
+
+  const biHourlyData = new Array(12).fill(0);
+  allReports.forEach(r => {
+    if (!r.createdAt) return;
+    const dateStr = r.createdAt.split('T')[0];
+    if (dateStr >= startDate && dateStr <= endDate) {
+      const hour = new Date(r.createdAt).getHours();
+      biHourlyData[Math.floor(hour / 2)]++;
+    }
+  });
+  const maxIncidents = Math.max(...biHourlyData, 1);
+  const chartBars = biHourlyData.map(count => ({ count, height: (count / maxIncidents) * 100 }));
 
   return (
     <div className="space-y-6">
@@ -48,7 +66,6 @@ const AdminDashboard = () => {
           { label: 'Incidentes Activos', value: stats.activeIncidents ?? 0, change: 'En tiempo real', icon: AlertTriangle, color: 'text-danger', bg: 'bg-danger/8 border-danger/15' },
           { label: 'Tiempo Resp. Promedio', value: stats.avgResponseTime ?? '—', change: 'Operativo', icon: Clock, color: 'text-warning', bg: 'bg-warning/8 border-warning/15' },
           { label: 'Resueltos Hoy', value: stats.resolvedToday ?? 0, change: 'Hoy', icon: CheckCircle, color: 'text-success', bg: 'bg-success/8 border-success/15' },
-          { label: 'Unidades Desplegadas', value: `${stats.deployedUnits ?? 0}/${stats.totalUnits ?? 0}`, change: 'Activas', icon: Users, color: 'text-primary', bg: 'bg-primary/8 border-primary/15' },
         ].map((kpi, i) => (
           <Card key={i} className="relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-[0.04]">
@@ -76,31 +93,32 @@ const AdminDashboard = () => {
               <div className="flex justify-between items-start">
                 <div>
                   <CardTitle>Tendencia de Incidentes por Hora</CardTitle>
-                  <p className="text-xs text-text-muted mt-1">Últimas 24 horas</p>
+                  <p className="text-xs text-text-muted mt-1">Acumulado del periodo seleccionado</p>
                 </div>
-                <select className="text-xs bg-muted border border-border-light rounded-lg px-2 py-1 text-text-secondary outline-none focus:ring-1 focus:ring-primary/30">
-                  <option>Hoy</option><option>Esta semana</option>
-                </select>
+                <div className="flex gap-2">
+                  <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="text-xs bg-muted border border-border-light rounded-lg px-2 py-1 text-text-secondary outline-none focus:ring-1 focus:ring-primary/30" />
+                  <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="text-xs bg-muted border border-border-light rounded-lg px-2 py-1 text-text-secondary outline-none focus:ring-1 focus:ring-primary/30" />
+                </div>
               </div>
             </CardHeader>
             <CardContent className="pb-6">
               <div className="relative">
                 <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-[10px] text-text-muted pr-2">
-                  {[100, 75, 50, 25, 0].map(v => <span key={v}>{v}</span>)}
+                  {[maxIncidents, Math.floor(maxIncidents * 0.75), Math.floor(maxIncidents * 0.5), Math.floor(maxIncidents * 0.25), 0].map((v, idx) => <span key={idx}>{v}</span>)}
                 </div>
                 <div className="ml-8 flex items-end justify-between gap-1.5 h-52 border-b border-l border-border pt-2 px-2">
-                  {chartBars.map((h, i) => (
+                  {chartBars.map((bar, i) => (
                     <div key={i} className="flex-1 flex flex-col justify-end h-full group relative">
                       <div
                         className="w-full rounded-t-sm transition-all duration-200 group-hover:brightness-110 cursor-pointer"
                         style={{
-                          height: `${h}%`,
-                          background: h > 70 ? '#E76F51' : h > 50 ? '#DDA15E' : '#4C9F70',
+                          height: `${bar.height}%`,
+                          background: bar.height > 70 ? '#E76F51' : bar.height > 50 ? '#DDA15E' : '#4C9F70',
                           opacity: 0.8
                         }}
                       >
                         <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-text-primary text-white border border-text-primary/10 text-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 font-medium">
-                          {h} inc.
+                          {bar.count} inc.
                         </div>
                       </div>
                       <span className="text-[10px] text-text-muted text-center mt-1">{i * 2}h</span>
@@ -211,26 +229,6 @@ const AdminDashboard = () => {
                 </div>
                 );
               })}
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-danger animate-pulse-subtle" />
-                Actividad Reciente
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              {recentActivity.slice(0, 4).map((act, i) => (
-                <div key={act.activityId || i} className={`px-5 py-3 flex items-center gap-3 ${i < 3 ? 'border-b border-border-light' : ''}`}>
-                  <div className={`h-2 w-2 rounded-full flex-shrink-0 ${act.action?.includes('RESOLVED') ? 'bg-success' : 'bg-danger'}`} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs text-text-primary truncate">{act.action?.replace(/_/g, ' ') || 'Actividad'}</p>
-                    <p className="text-[10px] text-text-muted">{act.createdAt ? new Date(act.createdAt).toLocaleString('es-BO') : ''}</p>
-                  </div>
-                </div>
-              ))}
             </CardContent>
           </Card>
         </div>

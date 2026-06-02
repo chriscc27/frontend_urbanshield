@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Layers, Search, ShieldAlert, Crosshair, Maximize, RefreshCw } from 'lucide-react';
+import { Search, ShieldAlert, Crosshair, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { getMapMarkers, searchPlaces } from '../../services/locationApi';
@@ -12,6 +12,7 @@ const POLL_MS = 15000;
 
 const AdminMap = () => {
   const [activeFilter, setActiveFilter] = useState('all');
+  const [isAlertsOpen, setIsAlertsOpen] = useState(true);
   const { data, loading, error, lastUpdated, refetch } = usePolling(() => getMapMarkers(), [], POLL_MS);
 
   const markers = useMemo(() => {
@@ -84,13 +85,12 @@ const AdminMap = () => {
       <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-start pointer-events-none">
         <div className="w-full max-w-md bg-[color-mix(in_srgb,var(--color-card-bg)_95%,transparent)] backdrop-blur-md rounded-2xl shadow-lg border border-border overflow-hidden pointer-events-auto">
           <div className="p-4 border-b border-border-light">
-            <h3 className="font-bold text-text-primary font-display mb-3 flex items-center gap-2 text-sm">
+            <h3 className="font-bold text-text-primary font-display flex items-center gap-2 text-sm">
               <span className="h-7 w-7 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
                 <ShieldAlert className="h-4 w-4 text-primary" />
               </span>
               Centro de Monitoreo
             </h3>
-            <Input placeholder="Buscar ubicación o ID..." leftIcon={<Search className="h-4 w-4" />} className="py-2 text-sm w-full" />
           </div>
             <div className="p-4 space-y-4">
             <div>
@@ -155,34 +155,37 @@ const AdminMap = () => {
         </div>
 
         <div className="flex flex-col gap-2 pointer-events-auto">
-          {[Layers, Crosshair, Maximize].map((Icon, i) => (
-            <Button key={i} variant="secondary" size="icon" className="shadow-md">
-              <Icon className="h-5 w-5" />
-            </Button>
-          ))}
+          <Button variant="secondary" size="icon" className="shadow-md">
+            <Crosshair className="h-5 w-5" />
+          </Button>
         </div>
       </div>
 
-      <div className="absolute bottom-6 right-6 z-20 bg-[color-mix(in_srgb,var(--color-card-bg)_95%,transparent)] backdrop-blur-md rounded-2xl shadow-lg border border-border overflow-hidden pointer-events-auto flex flex-col max-h-80" style={{ width: '300px' }}>
-        <div className="p-3 bg-danger/8 border-b border-danger/15 flex justify-between items-center">
+      <div className="absolute bottom-6 right-6 z-20 bg-[color-mix(in_srgb,var(--color-card-bg)_95%,transparent)] backdrop-blur-md rounded-2xl shadow-lg border border-border overflow-hidden pointer-events-auto flex flex-col max-h-80 transition-all duration-300" style={{ width: '300px' }}>
+        <div className="p-3 bg-danger/8 border-b border-danger/15 flex justify-between items-center cursor-pointer" onClick={() => setIsAlertsOpen(!isAlertsOpen)}>
           <span className="font-bold text-danger text-sm flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-danger animate-pulse-subtle" />
             Alertas Recientes
           </span>
+          <button className="text-danger hover:text-danger-dark">
+            {isAlertsOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+          </button>
         </div>
-        <div className="overflow-y-auto flex-1">
-          {filtered.slice(0, 8).map((log) => (
-            <div key={log.id} className="p-3 border-b border-border-light hover:bg-hover transition-colors text-sm last:border-b-0">
-              <div className="flex justify-between items-start mb-1">
-                <span className="font-bold text-text-primary text-xs">{log.id}</span>
+        {isAlertsOpen && (
+          <div className="overflow-y-auto flex-1">
+            {filtered.slice(0, 8).map((log) => (
+              <div key={log.id} className="p-3 border-b border-border-light hover:bg-hover transition-colors text-sm last:border-b-0">
+                <div className="flex justify-between items-start mb-1">
+                  <span className="font-bold text-text-primary text-xs">{log.id}</span>
+                </div>
+                <p className={`text-xs ${log.priority === 'critical' ? 'text-danger' : 'text-warning'}`}>{log.text}</p>
               </div>
-              <p className={`text-xs ${log.priority === 'critical' ? 'text-danger' : 'text-warning'}`}>{log.text}</p>
-            </div>
-          ))}
-          {!loading && filtered.length === 0 && (
-            <p className="p-4 text-xs text-text-muted text-center">Sin incidentes activos</p>
-          )}
-        </div>
+            ))}
+            {!loading && filtered.length === 0 && (
+              <p className="p-4 text-xs text-text-muted text-center">Sin incidentes activos</p>
+            )}
+          </div>
+        )}
       </div>
 
         <div className="absolute inset-0 z-0 overflow-hidden rounded-none">

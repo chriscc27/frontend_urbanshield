@@ -10,13 +10,8 @@ import { ReportListItemSkeleton } from '../../components/ui/Skeleton';
 
 const statusConfig = {
   pending: { label: 'Pendiente', color: 'warning', icon: Clock },
-  new: { label: 'Pendiente', color: 'warning', icon: Clock },
-  verified: { label: 'Verificado (Radar)', color: 'accent', icon: ShieldAlert },
   in_progress: { label: 'En Progreso', color: 'accent', icon: ShieldAlert },
-  dispatched: { label: 'En Progreso', color: 'accent', icon: ShieldAlert },
   resolved: { label: 'Resuelto', color: 'success', icon: CheckCircle },
-  cancelled: { label: 'Desmentido / Falso', color: 'danger', icon: XCircle },
-  deleted: { label: 'Eliminado', color: 'danger', icon: XCircle }
 };
 
 const AdminHistory = () => {
@@ -50,7 +45,9 @@ const AdminHistory = () => {
   }, [reports, search, statusFilter, categoryFilter]);
 
   const categoryOptions = useMemo(() => {
-    const set = new Set(reports.map((report) => report.category).filter(Boolean));
+    const standardCategories = ['incendio', 'inundacion', 'delito', 'accidente', 'infraestructura', 'otro'];
+    const dbCategories = reports.map((report) => report.category).filter(Boolean);
+    const set = new Set([...standardCategories, ...dbCategories]);
     return Array.from(set).map((category) => ({ value: category, label: getCategoryMeta(category).label || category }));
   }, [reports]);
 
