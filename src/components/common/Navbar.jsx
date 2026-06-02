@@ -27,12 +27,12 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${scrolled ? 'pt-4' : 'pt-0'}`}>
-      <div className={`mx-auto transition-all duration-300 ${scrolled ? 'max-w-5xl px-4' : 'max-w-7xl px-4 sm:px-6 lg:px-8'}`}>
-        <div className={`flex justify-between items-center transition-all duration-300 ${
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ease-in-out ${scrolled ? 'pt-3' : 'pt-0'}`}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full transition-all duration-200">
+        <div className={`flex justify-between items-center transition-all duration-200 ${
           scrolled 
-            ? 'glass-premium rounded-full px-6 h-14 border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]' 
-            : 'h-20 bg-transparent border-none'
+            ? 'glass-premium rounded-full px-6 h-14 border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)] max-w-5xl mx-auto' 
+            : 'h-20 bg-transparent border-none w-full'
         }`}>
           
           {/* Logo */}
