@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { User, Mail, Phone, Camera, Eye, EyeOff, Check, AlertCircle, Edit2, ShieldCheck, Star } from 'lucide-react';
+import { User, Mail, Phone, Camera, Eye, EyeOff, Check, AlertCircle, Edit2, ShieldCheck, Star, UploadCloud } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
@@ -171,52 +171,58 @@ const ProfilePage = () => {
               </div>
               <h3 className="text-xl font-bold text-text-primary font-display mb-1">{user?.name || 'Usuario'}</h3>
               <p className="text-sm text-text-secondary font-medium mb-4">{user?.role === 'admin' ? 'Administrador' : 'Ciudadano'}</p>
-              <div className="flex justify-center mb-6">
-                <Badge variant={user?.trustScore >= 80 ? 'success' : user?.trustScore < 20 ? 'danger' : 'accent'} className="shadow-sm py-1.5 px-3">
-                  <ShieldCheck className="h-3.5 w-3.5 mr-1" />
-                  {user?.trustScore >= 80 ? 'Ciudadano Ejemplar' : user?.trustScore < 20 ? 'En Observación' : 'Ciudadano Activo'}
-                </Badge>
-              </div>
-              <div className="space-y-4 pt-5 border-t border-border-light/50 text-left">
-                {[
-                  { label: 'Reportes Totales', value: String(all.length) },
-                  { label: 'Resueltos', value: String(resolved) },
-                  { label: 'Precisión GPS', value: '100%' },
-                  { label: 'Confianza', value: `${user?.trustScore || 50} pts` },
-                ].map((item, i) => (
-                  <div key={i} className="flex justify-between items-center text-sm">
-                    <span className="text-text-secondary font-medium">{item.label}</span>
-                    <span className="font-bold text-text-primary bg-secondary-bg px-2.5 py-1 rounded-lg">{item.value}</span>
+              {user?.role !== 'admin' && (
+                <>
+                  <div className="flex justify-center mb-6">
+                    <Badge variant={user?.trustScore >= 80 ? 'success' : user?.trustScore < 20 ? 'danger' : 'accent'} className="shadow-sm py-1.5 px-3">
+                      <ShieldCheck className="h-3.5 w-3.5 mr-1" />
+                      {user?.trustScore >= 80 ? 'Ciudadano Ejemplar' : user?.trustScore < 20 ? 'En Observación' : 'Ciudadano Activo'}
+                    </Badge>
                   </div>
-                ))}
-              </div>
+                  <div className="space-y-4 pt-5 border-t border-border-light/50 text-left">
+                    {[
+                      { label: 'Reportes Totales', value: String(all.length) },
+                      { label: 'Resueltos', value: String(resolved) },
+                      { label: 'Precisión GPS', value: '100%' },
+                      { label: 'Confianza', value: `${user?.trustScore || 50} pts` },
+                    ].map((item, i) => (
+                      <div key={i} className="flex justify-between items-center text-sm">
+                        <span className="text-text-secondary font-medium">{item.label}</span>
+                        <span className="font-bold text-text-primary bg-secondary-bg px-2.5 py-1 rounded-lg">{item.value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
 
-          <Card className="rounded-[2rem] shadow-xl border-border-light bg-secondary-bg/20 backdrop-blur-md">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2">
-                <Star className="h-5 w-5 text-amber-500" /> Logros Destacados
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 pt-4">
-              {[
-                { icon: '🏅', label: 'Primer Reporte', desc: 'Dando los primeros pasos' },
-                { icon: '⚡', label: 'Reporte Rápido', desc: 'Enviado en menos de 2 min' },
-                { icon: '🎯', label: 'Precisión Perfecta', desc: '+95% de exactitud GPS' },
-              ].map((ach, i) => (
-                <div key={i} className="flex items-center gap-4 p-3.5 rounded-2xl bg-secondary-bg/50 border border-border-light hover:border-border hover:shadow-md transition-all duration-300">
-                  <div className="h-12 w-12 rounded-xl bg-white/50 flex items-center justify-center text-2xl shadow-sm border border-white/20">
-                    {ach.icon}
+          {user?.role !== 'admin' && (
+            <Card className="rounded-[2rem] shadow-xl border-border-light bg-secondary-bg/20 backdrop-blur-md">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2">
+                  <Star className="h-5 w-5 text-amber-500" /> Logros Destacados
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 pt-4">
+                {[
+                  { icon: '🏅', label: 'Primer Reporte', desc: 'Dando los primeros pasos' },
+                  { icon: '⚡', label: 'Reporte Rápido', desc: 'Enviado en menos de 2 min' },
+                  { icon: '🎯', label: 'Precisión Perfecta', desc: '+95% de exactitud GPS' },
+                ].map((ach, i) => (
+                  <div key={i} className="flex items-center gap-4 p-3.5 rounded-2xl bg-secondary-bg/50 border border-border-light hover:border-border hover:shadow-md transition-all duration-300">
+                    <div className="h-12 w-12 rounded-xl bg-white/50 flex items-center justify-center text-2xl shadow-sm border border-white/20">
+                      {ach.icon}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-text-primary">{ach.label}</p>
+                      <p className="text-xs text-text-muted mt-0.5">{ach.desc}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-bold text-text-primary">{ach.label}</p>
-                    <p className="text-xs text-text-muted mt-0.5">{ach.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+                ))}
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Columna derecha: información personal (edición inline) + seguridad */}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, FileText, Map, Inbox, Settings } from 'lucide-react';
+import { LayoutDashboard, FileText, Map, Inbox, Settings, User } from 'lucide-react';
 import Sidebar from '../components/common/Sidebar';
 import TopHeader from '../components/common/TopHeader';
 
@@ -11,6 +11,7 @@ const adminLinks = [
   { path: '/admin/history', label: 'Historial de Reportes', icon: FileText, exact: false },
   { path: '/admin/map', label: 'Mapa de Monitoreo', icon: Map, exact: false },
   { path: '/admin/inbox', label: 'Bandeja de Soporte', icon: Inbox, exact: false },
+  { path: '/admin/profile', label: 'Mi Perfil', icon: User, exact: false },
   { path: '/admin/settings', label: 'Configuración', icon: Settings, exact: false },
 ];
 
@@ -20,6 +21,7 @@ const pageTitles = {
   '/admin/history': 'Historial de Reportes',
   '/admin/map': 'Monitoreo en Tiempo Real',
   '/admin/inbox': 'Bandeja de Soporte',
+  '/admin/profile': 'Mi Perfil',
   '/admin/settings': 'Configuración',
 };
 

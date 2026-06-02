@@ -138,20 +138,6 @@
   pointer-events: none;
 }
 
-/* Leaflet control adjustments to ensure controls render inside the map area */
-.leaflet-container {
-  position: relative;
-}
-.leaflet-control-container {
-  z-index: 800;
-  pointer-events: none;
-}
-.leaflet-control {
-  pointer-events: auto;
-}
-.leaflet-top, .leaflet-bottom {
-  box-sizing: border-box;
-}
 
 /* ─── Utility Classes ──────────────────────────────────────── */
 @layer utilities {

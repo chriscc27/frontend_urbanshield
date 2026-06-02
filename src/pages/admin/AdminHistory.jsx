@@ -45,7 +45,7 @@ const AdminHistory = () => {
   }, [reports, search, statusFilter, categoryFilter]);
 
   const categoryOptions = useMemo(() => {
-    const standardCategories = ['incendio', 'inundacion', 'delito', 'accidente', 'infraestructura', 'otro'];
+    const standardCategories = ['incendio', 'inundacion', 'delito', 'accidente', 'bloqueo', 'otros'];
     const dbCategories = reports.map((report) => report.category).filter(Boolean);
     const set = new Set([...standardCategories, ...dbCategories]);
     return Array.from(set).map((category) => ({ value: category, label: getCategoryMeta(category).label || category }));

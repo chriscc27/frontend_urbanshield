@@ -15,21 +15,20 @@ import { ReportListItemSkeleton } from '../../components/ui/Skeleton';
 import OnboardingTour from '../../components/ui/OnboardingTour';
 
 const categoryIconMap = {
-  'Incendio':         { icon: Flame,        color: 'text-danger',     bg: 'bg-danger/8 border-danger/15' },
-  'Inundación':       { icon: Waves,        color: 'text-blue-500',   bg: 'bg-blue-50 border-blue-100' },
-  'Delito':           { icon: ShieldAlert,  color: 'text-purple-500', bg: 'bg-purple-50 border-purple-100' },
-  'Accidente':        { icon: Car,          color: 'text-warning',    bg: 'bg-warning/8 border-warning/15' },
-  'Bloqueo vial':     { icon: Construction, color: 'text-accent-dark',bg: 'bg-accent/8 border-accent/15' },
-  'Infraestructura urbana': { icon: Activity, color: 'text-primary',  bg: 'bg-primary/8 border-primary/15' },
+  'Incendio': { icon: Flame, color: 'text-danger', bg: 'bg-danger/8 border-danger/15' },
+  'Inundación': { icon: Waves, color: 'text-blue-500', bg: 'bg-blue-50 border-blue-100' },
+  'Delito': { icon: ShieldAlert, color: 'text-purple-500', bg: 'bg-purple-50 border-purple-100' },
+  'Accidente': { icon: Car, color: 'text-warning', bg: 'bg-warning/8 border-warning/15' },
+  'Bloqueo vial': { icon: Construction, color: 'text-accent-dark', bg: 'bg-accent/8 border-accent/15' },
 };
 
 const getStatusBadge = (status) => {
   switch (status) {
     case 'En Progreso': return <Badge variant="warning" dot>{status}</Badge>;
-    case 'Resuelto':    return <Badge variant="success" dot>{status}</Badge>;
-    case 'Pendiente':   return <Badge variant="danger" dot>{status}</Badge>;
-    case 'Despachado':  return <Badge variant="accent" dot>{status}</Badge>;
-    default:            return <Badge dot>{status}</Badge>;
+    case 'Resuelto': return <Badge variant="success" dot>{status}</Badge>;
+    case 'Pendiente': return <Badge variant="danger" dot>{status}</Badge>;
+    case 'Despachado': return <Badge variant="accent" dot>{status}</Badge>;
+    default: return <Badge dot>{status}</Badge>;
   }
 };
 
@@ -54,10 +53,10 @@ const getDistance = (lat1, lon1, lat2, lon2) => {
   const R = 6371; // km
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
-  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLon/2) * Math.sin(dLon/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return (R * c).toFixed(1);
 };
 
@@ -65,11 +64,12 @@ const CitizenDashboard = () => {
   const { user } = useAuth();
 
   // Personal reports — used for stats + sidebar list
-  const { data, loading, error } = useAsyncData(() => listReports({ limit: 50 }), []);
-  const allReports = data?.data || [];
+  const { data: allData, loading, error } = useAsyncData(() => listReports({ limit: 100 }), []);
+  const allReports = Array.isArray(allData) ? allData : (Array.isArray(allData?.data) ? allData.data : (allData?.items || []));
   const recentReports = allReports.slice(0, 4).map(formatReportForList);
 
   const [userLoc, setUserLoc] = useState(null);
+
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(pos => {
@@ -84,11 +84,11 @@ const CitizenDashboard = () => {
     [],
     15000,
   );
-  
+
   const nearbyReports = Array.isArray(nearbyData) ? nearbyData : nearbyData?.markers || [];
-  
+
   // Filtrar los recientes de la ciudad, ordenados por los mas recientes
-  const cityActivity = [...nearbyReports].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 15);
+  const cityActivity = [...nearbyReports].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 15);
 
   const stats = useMemo(() => ({
     total: allReports.length,
@@ -114,7 +114,7 @@ const CitizenDashboard = () => {
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
-      <OnboardingTour 
+      <OnboardingTour
         steps={[
           { targetId: 'tour-trust', title: 'Tu Reputación', content: 'Aquí verás tu Nivel de Confianza y puntos. ¡Ganas puntos al reportar incidentes verídicos y validar los de otros!' },
           { targetId: 'tour-map', title: 'Radar Ciudadano', content: 'En este mapa verás los incidentes confirmados cerca de ti en tiempo real.' },
@@ -269,38 +269,39 @@ const CitizenDashboard = () => {
                     const downvotes = act.downvotesCount || 0;
                     const dist = getDistance(userLoc?.lat, userLoc?.lng, act.latitude || act.lat, act.longitude || act.lng);
                     return (
-                    <div
-                      key={act.id}
-                      className={`px-5 py-4 flex items-start gap-3 ${i < cityActivity.length - 1 ? 'border-b border-border-light' : ''} hover:bg-muted/50 transition-colors`}
-                    >
-                      <div className={`h-2.5 w-2.5 mt-1 rounded-full flex-shrink-0 shadow-sm ${act.priority === 'critical' ? 'bg-danger shadow-danger/40' : act.status === 'verified' ? 'bg-success shadow-success/40' : 'bg-warning shadow-warning/40'}`} />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start gap-2 mb-1">
-                          <p className="text-sm font-semibold text-text-primary truncate">{act.title || act.category}</p>
-                          <Badge variant={act.priority === 'critical' ? 'danger' : 'warning'} className="text-[10px] py-0 px-1.5 h-4.5 flex-shrink-0 border-none font-bold">
-                            {act.status === 'verified' ? 'Verificado' : 'Pendiente'}
-                          </Badge>
-                        </div>
-                        
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
-                          <p className="text-xs text-text-muted flex items-center gap-1 font-medium">
-                            <Clock className="h-3 w-3" /> {getRelativeTime(act.createdAt)}
-                          </p>
-                          {dist && (
-                            <p className="text-xs text-text-muted flex items-center gap-1">
-                              <MapPin className="h-3 w-3" /> a {dist} km
+                      <div
+                        key={act.id}
+                        className={`px-5 py-4 flex items-start gap-3 ${i < cityActivity.length - 1 ? 'border-b border-border-light' : ''} hover:bg-muted/50 transition-colors`}
+                      >
+                        <div className={`h-2.5 w-2.5 mt-1 rounded-full flex-shrink-0 shadow-sm ${act.priority === 'critical' ? 'bg-danger shadow-danger/40' : act.status === 'verified' ? 'bg-success shadow-success/40' : 'bg-warning shadow-warning/40'}`} />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex justify-between items-start gap-2 mb-1">
+                            <p className="text-sm font-semibold text-text-primary truncate">{act.title || act.category}</p>
+                            <Badge variant={act.priority === 'critical' ? 'danger' : 'warning'} className="text-[10px] py-0 px-1.5 h-4.5 flex-shrink-0 border-none font-bold">
+                              {act.status === 'verified' ? 'Verificado' : 'Pendiente'}
+                            </Badge>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
+                            <p className="text-xs text-text-muted flex items-center gap-1 font-medium">
+                              <Clock className="h-3 w-3" /> {getRelativeTime(act.createdAt)}
                             </p>
-                          )}
-                          {(upvotes > 0 || downvotes > 0) && (
-                            <div className="flex items-center gap-2 text-[10px] font-bold bg-secondary-bg px-2 py-0.5 rounded-full border border-border">
-                              {upvotes > 0 && <span className="text-success flex items-center gap-1"><ThumbsUp className="h-2.5 w-2.5" /> {upvotes}</span>}
-                              {downvotes > 0 && <span className="text-danger flex items-center gap-1"><ThumbsDown className="h-2.5 w-2.5" /> {downvotes}</span>}
-                            </div>
-                          )}
+                            {dist && (
+                              <p className="text-xs text-text-muted flex items-center gap-1">
+                                <MapPin className="h-3 w-3" /> a {dist} km
+                              </p>
+                            )}
+                            {(upvotes > 0 || downvotes > 0) && (
+                              <div className="flex items-center gap-2 text-[10px] font-bold bg-secondary-bg px-2 py-0.5 rounded-full border border-border">
+                                {upvotes > 0 && <span className="text-success flex items-center gap-1"><ThumbsUp className="h-2.5 w-2.5" /> {upvotes}</span>}
+                                {downvotes > 0 && <span className="text-danger flex items-center gap-1"><ThumbsDown className="h-2.5 w-2.5" /> {downvotes}</span>}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )})
+                    )
+                  })
                 )}
               </div>
               <div className="p-3 border-t border-border-light bg-secondary-bg/30 rounded-b-[1.25rem]">
