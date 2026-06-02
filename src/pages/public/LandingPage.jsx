@@ -5,6 +5,7 @@ import { motion, useMotionValue, useSpring, useScroll, useTransform } from 'fram
 import Button from '../../components/ui/Button';
 import { ButtonColorful } from '../../components/ui/button-colorful';
 import { InteractiveSelector } from '../../components/ui/interactive-selector';
+import pitbulBinarioLogo from '../../images/pitbul_binario_logo.png';
 
 // --- BUBBLE COMPONENT FOR HERO ---
 const FloatingBubble = ({ title, reporter, icon: Icon, delay, x, y, type = 'primary', duration = 8 }) => {
@@ -309,6 +310,35 @@ const LandingPage = () => {
               </div>
             </motion.div>
           ))}
+        </motion.div>
+
+        {/* Team Logo / Branding */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+          className="mt-20 flex flex-col items-center justify-center text-center relative z-10"
+        >
+          <span className="text-xs font-bold uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#D6A663] mb-3">
+            Un proyecto firmado por
+          </span>
+          
+          <motion.div
+            animate={{ y: [0, -12, 0] }}
+            transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}
+            className="w-full max-w-[460px] md:max-w-[540px] transition-transform duration-300 hover:scale-105"
+          >
+            <img
+              src={pitbulBinarioLogo}
+              alt="Pitbull Binario Logo"
+              className="w-full h-auto object-contain mx-auto mix-blend-multiply"
+            />
+          </motion.div>
+
+          <p className="mt-6 text-text-secondary font-medium italic text-base md:text-lg max-w-md tracking-tight leading-relaxed">
+            "Código implacable, impacto real. Protegiendo comunidades un bit a la vez."
+          </p>
         </motion.div>
       </section>
 
