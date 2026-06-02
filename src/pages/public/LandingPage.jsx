@@ -34,7 +34,7 @@ const FloatingBubble = ({
   scrollY,
 }) => {
   const palette = {
-    danger:  { bg: 'bg-danger/10',  text: 'text-danger',  border: 'border-danger/20' },
+    danger: { bg: 'bg-danger/10', text: 'text-danger', border: 'border-danger/20' },
     warning: { bg: 'bg-warning/10', text: 'text-warning', border: 'border-warning/20' },
     success: { bg: 'bg-success/10', text: 'text-success', border: 'border-success/20' },
     primary: { bg: 'bg-primary/10', text: 'text-primary', border: 'border-primary/20' },
@@ -393,71 +393,59 @@ const LandingPage = () => {
       {/* ================================================================
           2. THE BOTTLENECK  --  Glass Bento Grid
           ================================================================ */}
+      {/* ================================================================
+   2. THE BOTTLENECK  --  Glass Bento Grid
+   ================================================================ */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           {/* Left: TiltCard with problem statement */}
-          <TiltCard className="lg:col-span-5 glass-premium rounded-[2.5rem] p-10 lg:p-12 flex flex-col justify-between relative overflow-hidden hover:shadow-2xl transition-shadow duration-500 cursor-default">
-            <div className="relative z-10">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-8">
-                El Problema
-              </span>
-              <h2 className="text-4xl lg:text-5xl font-bold font-display text-text-primary mb-6 leading-[1.1] tracking-tight">
-                Conoces la burocracia.
-                <br />
-                Vamos a romperla.
-              </h2>
-              <p className="text-text-secondary text-lg mb-8 leading-relaxed">
-                Las llamadas al 911 se pierden, los reportes se duplican y las
-                autoridades llegan tarde. Halo unifica la informacion ciudadana
-                filtrando el ruido mediante validacion comunitaria.
-              </p>
+          <TiltCard className="lg:col-span-5 glass-premium rounded-[2.5rem] p-10 lg:p-12 flex flex-col justify-between relative overflow-hidden hover:shadow-2xl transition-shadow duration-500 cursor-default h-full">
+            <div className="relative z-10 flex flex-col h-full">
+              <div>
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-8">
+                  El Problema
+                </span>
+                <h2 className="text-4xl lg:text-5xl font-bold font-display text-text-primary mb-6 leading-[1.1] tracking-tight">
+                  Conoces la burocracia.
+                  <br />
+                  Vamos a romperla.
+                </h2>
+                <p className="text-text-secondary text-lg mb-8 leading-relaxed">
+                  Las llamadas al 911 se pierden, los reportes se duplican y las
+                  autoridades llegan tarde. Halo unifica la información ciudadana
+                  filtrando el ruido mediante validación comunitaria.
+                </p>
+              </div>
+              <div className="mt-auto">
+                <Link to="/admin">
+                  <Button
+                    variant="secondary"
+                    className="w-max glass-premium text-primary border border-white/80 shadow-lg hover:shadow-xl hover:bg-white transition-all rounded-xl font-bold hover:scale-105 transform"
+                  >
+                    Explorar el Portal de Autoridades
+                  </Button>
+                </Link>
+              </div>
             </div>
-            <div className="relative z-10">
-              <Link to="/admin">
-                <Button
-                  variant="secondary"
-                  className="w-max glass-premium text-primary border border-white/80 shadow-lg hover:shadow-xl hover:bg-white transition-all rounded-xl font-bold hover:scale-105 transform"
-                >
-                  Explorar el Portal de Autoridades
-                </Button>
-              </Link>
-            </div>
-            {/* Inner aurora glow */}
             <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-[#4C9F70]/10 rounded-full blur-[80px]" />
           </TiltCard>
 
-          {/* Right: 2x2 Stats grid */}
+          {/* Right: 2x2 Stats grid - sin parallax que afecte la altura */}
           <motion.div
-            style={{ y: parallaxY1 }}
-            className="lg:col-span-7 glass-premium rounded-[2.5rem] p-10 lg:p-12 grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-12"
+            // Eliminamos el parallaxY1 para que no se desplace verticalmente y rompa la alineación
+            // style={{ y: parallaxY1 }}  ← COMENTADO
+            className="lg:col-span-7 glass-premium rounded-[2.5rem] p-10 lg:p-12 grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-12 h-full"
           >
             {[
-              {
-                value: '15k+',
-                label:
-                  'Ciudadanos activos validando informacion en tiempo real.',
-              },
-              {
-                value: '4.2m',
-                label:
-                  'Tiempo de respuesta promedio mejorado gracias al GPS.',
-              },
-              {
-                value: '99%',
-                label:
-                  'Precision de reportes mediante el sistema de Trust Score.',
-              },
-              {
-                value: '24/7',
-                label:
-                  'Monitoreo ininterrumpido sin cajas negras ni desinformacion.',
-              },
+              { value: '15k+', label: 'Ciudadanos activos validando información en tiempo real.' },
+              { value: '4.2m', label: 'Tiempo de respuesta promedio mejorado gracias al GPS.' },
+              { value: '99%', label: 'Precisión de reportes mediante el sistema de Trust Score.' },
+              { value: '24/7', label: 'Monitoreo ininterrumpido sin cajas negras ni desinformación.' },
             ].map((stat, idx) => (
               <div
                 key={idx}
-                className={`flex flex-col justify-center group cursor-pointer ${
-                  idx < 2 ? 'border-b border-border-light/50 pb-8' : 'pt-8 sm:pt-0'
-                } ${idx % 2 === 0 ? 'sm:border-r border-border-light/50 sm:pr-8' : ''}`}
+                className={`flex flex-col justify-center group cursor-pointer ${idx < 2 ? 'border-b border-border-light/50 pb-8' : 'pt-8 sm:pt-0'
+                  } ${idx % 2 === 0 ? 'sm:border-r border-border-light/50 sm:pr-8' : ''}`}
               >
                 <h3 className="text-6xl lg:text-7xl font-bold font-display text-text-primary mb-3 tracking-tighter group-hover:scale-105 origin-left transition-transform duration-500 text-transparent bg-clip-text bg-gradient-to-br from-text-primary to-text-muted">
                   {stat.value}
@@ -468,31 +456,6 @@ const LandingPage = () => {
               </div>
             ))}
           </motion.div>
-        </div>
-      </section>
-
-      {/* ================================================================
-          3. INTERACTIVE SHOWCASE
-          ================================================================ */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="inline-flex items-center justify-center p-4 glass-premium rounded-2xl mb-8 transition-transform hover:rotate-12 cursor-pointer shadow-lg border border-white/60">
-              <Activity className="w-8 h-8 text-primary" />
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold font-display text-text-primary mb-12 tracking-tight">
-              Todo lo que necesitas, en un solo lugar
-            </h2>
-          </motion.div>
-
-          <div className="w-full">
-            <InteractiveSelector />
-          </div>
         </div>
       </section>
 
@@ -730,7 +693,7 @@ const LandingPage = () => {
           <span className="text-xs font-bold uppercase tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#D6A663] mb-3">
             Un proyecto firmado por
           </span>
-          
+
           <motion.div
             animate={{ y: [0, -12, 0] }}
             transition={{ repeat: Infinity, duration: 5, ease: 'easeInOut' }}

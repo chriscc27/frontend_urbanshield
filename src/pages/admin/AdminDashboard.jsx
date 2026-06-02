@@ -11,10 +11,10 @@ import Badge from '../../components/ui/Badge';
 const getStatusBadge = (status) => {
   switch (status) {
     case 'En Progreso': return <Badge variant="warning" dot>{status}</Badge>;
-    case 'Resuelto':    return <Badge variant="success" dot>{status}</Badge>;
-    case 'Pendiente':   return <Badge variant="danger" dot>{status}</Badge>;
-    case 'Despachado':  return <Badge variant="accent" dot>{status}</Badge>;
-    default:            return <Badge dot>{status}</Badge>;
+    case 'Resuelto': return <Badge variant="success" dot>{status}</Badge>;
+    case 'Pendiente': return <Badge variant="danger" dot>{status}</Badge>;
+    case 'Despachado': return <Badge variant="accent" dot>{status}</Badge>;
+    default: return <Badge dot>{status}</Badge>;
   }
 };
 
@@ -22,11 +22,11 @@ const AdminDashboard = () => {
   const { data, loading, error } = useAsyncData(() => getDashboard(), []);
   const stats = data?.stats || {};
   const criticalReports = (data?.criticalReports || []).map(formatReportForList);
-  
+
   // Real data for trend chart
   const { data: reportsResp } = useAsyncData(() => listReports({ limit: 1000 }), []);
   const allReports = Array.isArray(reportsResp) ? reportsResp : reportsResp?.items || [];
-  
+
   const [startDate, setStartDate] = React.useState(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
   const [endDate, setEndDate] = React.useState(new Date().toISOString().split('T')[0]);
 
@@ -41,6 +41,30 @@ const AdminDashboard = () => {
   });
   const maxIncidents = Math.max(...biHourlyData, 1);
   const chartBars = biHourlyData.map(count => ({ count, height: (count / maxIncidents) * 100 }));
+
+  const cityNames = { SCZ: 'Santa Cruz', LP: 'La Paz', CBBA: 'Cochabamba', SCR: 'Sucre', TJA: 'Tarija', ORU: 'Oruro', PTS: 'Potosí', TRN: 'Trinidad', BEN: 'Beni', PND: 'Pando', UNK: 'Zona Desconocida' };
+  const zoneStats = {};
+  allReports.forEach(r => {
+    if (r.status === 'resolved' || r.status === 'deleted' || r.status === 'cancelled') return;
+    const code = r.cityCode || 'UNK';
+    if (!zoneStats[code]) zoneStats[code] = { zone: cityNames[code] || code, count: 0, criticalCount: 0 };
+    zoneStats[code].count++;
+    if (r.priority === 'critical') zoneStats[code].criticalCount++;
+  });
+
+  const maxZoneCount = Math.max(...Object.values(zoneStats).map(z => z.count), 1);
+  const dynamicZones = Object.values(zoneStats)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5)
+    .map(z => {
+      let level = 'Estable';
+      let color = 'text-success';
+      let bg = 'bg-success/8';
+      let bar = Math.min((z.count / maxZoneCount) * 100, 100);
+      if (z.criticalCount > 0 || z.count >= 5) { level = 'Crítico'; color = 'text-danger'; bg = 'bg-danger/8'; }
+      else if (z.count >= 2) { level = 'Moderado'; color = 'text-warning'; bg = 'bg-warning/8'; }
+      return { ...z, level, color, bg, bar };
+    });
 
   return (
     <div className="space-y-6">
@@ -61,13 +85,13 @@ const AdminDashboard = () => {
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="flex flex-wrap justify-center gap-4">
         {[
           { label: 'Incidentes Activos', value: stats.activeIncidents ?? 0, change: 'En tiempo real', icon: AlertTriangle, color: 'text-danger', bg: 'bg-danger/8 border-danger/15' },
           { label: 'Tiempo Resp. Promedio', value: stats.avgResponseTime ?? '—', change: 'Operativo', icon: Clock, color: 'text-warning', bg: 'bg-warning/8 border-warning/15' },
           { label: 'Resueltos Hoy', value: stats.resolvedToday ?? 0, change: 'Hoy', icon: CheckCircle, color: 'text-success', bg: 'bg-success/8 border-success/15' },
         ].map((kpi, i) => (
-          <Card key={i} className="relative overflow-hidden">
+          <Card key={i} className="relative overflow-hidden w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1rem)]">
             <div className="absolute top-0 right-0 p-4 opacity-[0.04]">
               <kpi.icon className="h-24 w-24 text-text-primary" />
             </div>
@@ -78,7 +102,6 @@ const AdminDashboard = () => {
                 <TrendingUp className="h-3 w-3" />
                 {kpi.change}
               </div>
-              {/* Color accent strip */}
               <div className={`absolute bottom-0 left-0 right-0 h-0.5 border-b ${kpi.bg}`} />
             </CardContent>
           </Card>
@@ -135,13 +158,8 @@ const AdminDashboard = () => {
           <Card className="h-full">
             <CardHeader><CardTitle>Zonas Críticas</CardTitle></CardHeader>
             <CardContent className="space-y-3">
-              {[
-                { zone: 'Centro Histórico', count: 18, level: 'Crítico', color: 'text-danger', bg: 'bg-danger/8', bar: 90 },
-                { zone: 'Zona Sur — Comercial', count: 12, level: 'Crítico', color: 'text-danger', bg: 'bg-danger/8', bar: 60 },
-                { zone: 'Barrio Norte', count: 8, level: 'Moderado', color: 'text-warning', bg: 'bg-warning/8', bar: 40 },
-                { zone: 'Av. Circunvalación', count: 7, level: 'Moderado', color: 'text-warning', bg: 'bg-warning/8', bar: 35 },
-                { zone: 'Distrito Este', count: 3, level: 'Estable', color: 'text-success', bg: 'bg-success/8', bar: 15 },
-              ].map((item, i) => (
+              {dynamicZones.length === 0 && <p className="text-xs text-text-muted">No hay zonas críticas reportadas.</p>}
+              {dynamicZones.map((item, i) => (
                 <div key={i} className="p-3 rounded-xl border border-border-light hover:border-border hover:bg-hover transition-all cursor-pointer">
                   <div className="flex justify-between items-center mb-2">
                     <p className="text-sm font-semibold text-text-primary">{item.zone}</p>
@@ -215,18 +233,18 @@ const AdminDashboard = () => {
               ].map((cat, i) => {
                 const count = data?.analytics?.byCategory?.[cat.key] || 0;
                 return (
-                <div key={i} className="flex items-center gap-3">
-                  <cat.icon className={`h-4 w-4 flex-shrink-0 ${cat.color}`} />
-                  <div className="flex-1">
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-text-primary font-medium">{cat.label}</span>
-                      <span className="text-text-muted">{count}</span>
-                    </div>
-                    <div className="h-1.5 bg-secondary-bg rounded-full overflow-hidden">
-                      <div />
+                  <div key={i} className="flex items-center gap-3">
+                    <cat.icon className={`h-4 w-4 flex-shrink-0 ${cat.color}`} />
+                    <div className="flex-1">
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-text-primary font-medium">{cat.label}</span>
+                        <span className="text-text-muted">{count}</span>
+                      </div>
+                      <div className="h-1.5 bg-secondary-bg rounded-full overflow-hidden">
+                        <div className={`h-full ${cat.bar}`} style={{ width: `${Math.min((count / Math.max(stats.totalReports || 1, 1)) * 100, 100)}%` }} />
+                      </div>
                     </div>
                   </div>
-                </div>
                 );
               })}
             </CardContent>
