@@ -44,7 +44,7 @@ const ReportDetails = () => {
     location: raw.location || `${raw.latitude?.toFixed(4)}, ${raw.longitude?.toFixed(4)}`,
     coords: `${Math.abs(raw.latitude).toFixed(4)}° ${raw.latitude < 0 ? 'S' : 'N'}, ${Math.abs(raw.longitude).toFixed(4)}° ${raw.longitude < 0 ? 'W' : 'E'}`,
     description: raw.description,
-    imageUrl: raw.imageUrl,
+    imageUrls: raw.imageUrls || (raw.imageUrl ? [raw.imageUrl] : []),
     upvotes: Array.isArray(raw.upvotes) ? raw.upvotes.length : 0,
     downvotes: Array.isArray(raw.downvotes) ? raw.downvotes.length : 0,
   };
@@ -174,37 +174,42 @@ const ReportDetails = () => {
           <Card>
             <CardHeader><CardTitle>Evidencia Fotográfica</CardTitle></CardHeader>
             <CardContent>
-              {report.imageUrl ? (
-                <div className="space-y-3">
-                  <a
-                    href={report.imageUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block group relative overflow-hidden rounded-xl border border-border-light hover:border-primary/40 transition-all"
-                  >
-                    <img
-                      src={report.imageUrl}
-                      alt="Evidencia del incidente"
-                      className="w-full max-h-80 object-cover rounded-xl group-hover:scale-[1.02] transition-transform duration-300"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.nextSibling.style.display = 'flex';
-                      }}
-                    />
-                    <div
-                      style={{ display: 'none' }}
-                      className="w-full h-40 flex flex-col items-center justify-center text-text-muted bg-secondary-bg/60 rounded-xl"
-                    >
-                      <ImageIcon className="h-8 w-8 mb-2" />
-                      <p className="text-xs">No se pudo cargar la imagen</p>
-                    </div>
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all rounded-xl flex items-center justify-center">
-                      <span className="opacity-0 group-hover:opacity-100 text-white text-xs font-medium bg-black/50 px-3 py-1.5 rounded-lg transition-opacity">
-                        Ver en pantalla completa
-                      </span>
-                    </div>
-                  </a>
-                  <p className="text-xs text-text-muted text-center">Haz clic para ver en tamaño completo</p>
+              {report.imageUrls && report.imageUrls.length > 0 ? (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {report.imageUrls.map((url, idx) => (
+                      <a
+                        key={idx}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block group relative overflow-hidden rounded-xl border border-border-light hover:border-primary/40 transition-all"
+                      >
+                        <img
+                          src={url}
+                          alt={`Evidencia ${idx + 1}`}
+                          className="w-full h-48 object-cover rounded-xl group-hover:scale-[1.02] transition-transform duration-300"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                        <div
+                          style={{ display: 'none' }}
+                          className="w-full h-48 flex flex-col items-center justify-center text-text-muted bg-secondary-bg/60 rounded-xl"
+                        >
+                          <ImageIcon className="h-8 w-8 mb-2" />
+                          <p className="text-xs">No se pudo cargar la imagen</p>
+                        </div>
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all rounded-xl flex items-center justify-center">
+                          <span className="opacity-0 group-hover:opacity-100 text-white text-xs font-medium bg-black/50 px-3 py-1.5 rounded-lg transition-opacity">
+                            Ver completa
+                          </span>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                  <p className="text-xs text-text-muted text-center">Haz clic para ver las imágenes en tamaño completo</p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-10 text-text-muted border-2 border-dashed border-border-light rounded-xl">

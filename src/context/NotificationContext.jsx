@@ -16,7 +16,7 @@ export const NotificationProvider = ({ children }) => {
   const activeRef = useRef(true);
 
   const fetchNotifications = useCallback(async () => {
-    if (!user) return;
+    if (!user || !localStorage.getItem('accessToken')) return;
     try {
       const items = await listNotifications();
       const list = Array.isArray(items) ? items : items?.items || [];
@@ -38,7 +38,7 @@ export const NotificationProvider = ({ children }) => {
 
   useEffect(() => {
     activeRef.current = true;
-    if (!user) return;
+    if (!user || !localStorage.getItem('accessToken')) return;
 
     fetchNotifications();
 

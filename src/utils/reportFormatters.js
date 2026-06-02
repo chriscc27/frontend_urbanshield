@@ -66,6 +66,7 @@ export const formatReportForList = (report) => {
     statusRaw: report.status,
     location: report.location || `${report.latitude?.toFixed(4)}, ${report.longitude?.toFixed(4)}`,
     priority: PRIORITY_LABELS[report.priority] || report.priority,
+    reporter: report.reporterName || report.reporter || report.userId || 'Ciudadano',
     raw: report,
   };
 };

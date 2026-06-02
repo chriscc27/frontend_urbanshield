@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, FileText, Map, ShieldAlert, Settings } from 'lucide-react';
+import { LayoutDashboard, FileText, Map, Inbox, Settings } from 'lucide-react';
 import Sidebar from '../components/common/Sidebar';
 import TopHeader from '../components/common/TopHeader';
 
@@ -10,6 +10,7 @@ const adminLinks = [
   { path: '/admin/reports', label: 'Gestión de Reportes', icon: FileText, exact: false },
   { path: '/admin/history', label: 'Historial de Reportes', icon: FileText, exact: false },
   { path: '/admin/map', label: 'Mapa de Monitoreo', icon: Map, exact: false },
+  { path: '/admin/inbox', label: 'Bandeja de Soporte', icon: Inbox, exact: false },
   { path: '/admin/settings', label: 'Configuración Sistema', icon: Settings, exact: false },
 ];
 
@@ -18,6 +19,7 @@ const pageTitles = {
   '/admin/reports': 'Gestión de Emergencias',
   '/admin/history': 'Historial de Reportes',
   '/admin/map': 'Monitoreo en Tiempo Real',
+  '/admin/inbox': 'Bandeja de Soporte',
   '/admin/settings': 'Configuración del Sistema',
 };
 
@@ -39,9 +41,7 @@ const AdminLayout = () => {
         <TopHeader onMenuClick={() => setIsSidebarOpen(true)} title={getTitle()} />
 
         {/* Map gets a full-bleed, overflow-hidden surface; other pages keep padding. */}
-        <main
-          className={`flex-1 min-h-0 relative ${location.pathname === '/admin/map' ? 'overflow-hidden p-0' : 'overflow-y-auto p-4 sm:p-6 lg:p-8'}`}
-        >
+        <main className={`flex-1 min-h-0 relative ${location.pathname === '/admin/map' ? 'overflow-hidden p-0' : 'overflow-y-auto p-4 sm:p-6 lg:p-8'}`}>
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}

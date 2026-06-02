@@ -11,6 +11,8 @@ import AdminLayout from '../layout/AdminLayout';
 import LandingPage from '../pages/public/LandingPage';
 import LoginPage from '../pages/public/LoginPage';
 import RegisterPage from '../pages/public/RegisterPage';
+import ForgotPasswordPage from '../pages/public/ForgotPasswordPage';
+import ResetPasswordPage from '../pages/public/ResetPasswordPage';
 
 // Citizen Pages
 import CitizenDashboard from '../pages/citizen/CitizenDashboard';
@@ -24,6 +26,7 @@ import AdminDashboard from '../pages/admin/AdminDashboard';
 import AdminReports from '../pages/admin/AdminReports';
 import AdminHistory from '../pages/admin/AdminHistory';
 import AdminMap from '../pages/admin/AdminMap';
+import AdminInbox from '../pages/admin/AdminInbox';
 
 // Extra Pages
 import NotificationsPage from '../pages/extra/NotificationsPage';
@@ -41,6 +44,8 @@ const AppRoutes = () => {
       </Route>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
 
       {/* Citizen Routes */}
       <Route
@@ -74,6 +79,7 @@ const AppRoutes = () => {
         <Route path="reports" element={<AdminReports />} />
         <Route path="history" element={<AdminHistory />} />
         <Route path="map" element={<AdminMap />} />
+        <Route path="inbox" element={<AdminInbox />} />
         <Route path="notifications" element={<NotificationsPage />} />
         <Route path="profile" element={<ProfilePage />} />
       </Route>

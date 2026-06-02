@@ -102,8 +102,8 @@ const CreateReport = () => {
   };
 
   const uploadImages = async () => {
-    const urls = [];
-    const keys = [];
+    const uploaded = [];
+
     for (const file of files) {
       const presigned = await getPresignedUrl({
         fileName: file.name,
@@ -111,10 +111,13 @@ const CreateReport = () => {
         fileSize: file.size,
       });
       const publicUrl = await uploadFileToS3(file, presigned);
-      if (publicUrl) urls.push(publicUrl);
-      if (presigned.key) keys.push(presigned.key);
+      uploaded.push({ url: publicUrl, key: presigned.key });
     }
-    return { imageUrl: urls[0] || null, imageKeys: keys };
+
+    return {
+      imageUrl: uploaded[0]?.url || null,
+      imageKeys: uploaded.map((item) => item.key).filter(Boolean),
+    };
   };
 
   const nextStep = () => {
@@ -225,7 +228,7 @@ const CreateReport = () => {
         </motion.div>
       )}
 
-      <div className="relative overflow-hidden min-h-[500px]">
+      <div className="relative overflow-hidden min-h-[650px]">
         <AnimatePresence mode="wait" custom={direction}>
           
           {/* STEP 1: CATEGORY */}
@@ -383,8 +386,22 @@ const CreateReport = () => {
                       <p className="text-sm font-medium text-text-primary">Evidencia Fotográfica (Opcional)</p>
                       <p className="text-xs text-text-muted mt-1">Arrastra fotos aquí o haz clic</p>
                       {files.length > 0 && (
-                        <div className="mt-3 inline-flex items-center gap-2 bg-primary/20 text-primary-light px-3 py-1 rounded-full text-xs font-bold">
-                          <Check className="h-3 w-3" /> {files.length} archivos
+                        <div className="mt-4 grid grid-cols-5 gap-2" onClick={(e) => e.stopPropagation()}>
+                          {files.map((file, idx) => (
+                            <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-border-light group">
+                              <img src={URL.createObjectURL(file)} alt="preview" className="w-full h-full object-cover" />
+                              <button
+                                type="button"
+                                className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setFiles(prev => prev.filter((_, i) => i !== idx));
+                                }}
+                              >
+                                <AlertCircle className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
                         </div>
                       )}
                     </div>
