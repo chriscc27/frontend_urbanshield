@@ -61,7 +61,7 @@ const SettingsPage = () => {
     } else {
       document.documentElement.classList.remove('dark');
     }
-    
+
     if (reduceAnimations) {
       document.documentElement.style.setProperty('--animate-duration', '0s');
     } else {
@@ -83,7 +83,7 @@ const SettingsPage = () => {
       ...prev,
       appearance: nextAppearance
     }));
-    
+
     applyAppearance(nextAppearance.theme, nextAppearance.reduceAnimations);
     showToast();
   };
@@ -176,12 +176,11 @@ const SettingsPage = () => {
               {themes.map((theme, i) => {
                 const isActive = settings.appearance.theme === theme.label;
                 return (
-                  <button 
-                    key={i} 
+                  <button
+                    key={i}
                     onClick={() => updateAppearance('theme', theme.label)}
-                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border text-sm font-medium transition-all duration-200 ${
-                      isActive ? 'bg-primary/8 border-primary/30 text-primary scale-[1.02] shadow-sm' : 'border-border text-text-secondary hover:border-border-strong hover:bg-hover'
-                    }`}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border text-sm font-medium transition-all duration-200 ${isActive ? 'bg-primary/8 border-primary/30 text-primary scale-[1.02] shadow-sm' : 'border-border text-text-secondary hover:border-border-strong hover:bg-hover'
+                      }`}
                   >
                     <theme.icon className="h-5 w-5" />
                     {theme.label}
@@ -199,41 +198,9 @@ const SettingsPage = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Security */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2.5">
-            <span className="h-7 w-7 rounded-lg bg-danger/8 border border-danger/15 flex items-center justify-center">
-              <Lock className="h-4 w-4 text-danger" />
-            </span>
-            Privacidad y Seguridad
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="px-5 py-4 space-y-1">
-          <div className="flex items-center justify-between py-4 border-b border-border-light">
-            <div>
-              <p className="text-sm font-semibold text-text-primary">Cambiar Contraseña</p>
-              <p className="text-xs text-text-muted mt-0.5">Actualiza tu contraseña con frecuencia.</p>
-            </div>
-            <Button variant="muted" size="xs" onClick={() => navigate('/profile')}>Actualizar en Perfil</Button>
-          </div>
-          <div className="flex items-center justify-between py-4 border-b border-border-light">
-            <div>
-              <p className="text-sm font-semibold text-text-primary">Autenticación 2FA</p>
-              <p className="text-xs text-text-muted mt-0.5">Añade una capa extra de seguridad.</p>
-            </div>
-            <Button variant="primary" size="xs" onClick={() => navigate('/profile')}>Configurar</Button>
-          </div>
-          <div className="flex items-center justify-between py-4">
-            <div>
-              <p className="text-sm font-semibold text-text-primary">Sesiones Activas</p>
-              <p className="text-xs text-text-muted mt-0.5">1 dispositivo conectado actualmente.</p>
-            </div>
-            <Button variant="outline" className="text-danger border-danger/30 hover:bg-danger/10" size="xs">Cerrar otras sesiones</Button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className='mt-12'>
+        <div className="mt-12 h-12"></div>
+      </div>
     </div>
   );
 };

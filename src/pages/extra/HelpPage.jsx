@@ -17,8 +17,7 @@ const faqsData = [
   { id: '8', q: '¿Qué hago si me equivoqué de ubicación en un reporte?', a: 'Por ahora, las ubicaciones de los incidentes son inmutables una vez enviados. Si cometiste un error grave, te sugerimos ir a "Mis Reportes", cancelar el reporte erróneo y crear uno nuevo en la ubicación correcta.' },
   { id: '9', q: '¿Qué son las Alertas de Zonas Cercanas?', a: 'Es una función en tu Configuración que, si la activas, te enviará notificaciones inmediatas si se reporta y verifica un incidente a menos de 5 km de tu ubicación GPS actual.' },
   { id: '10', q: '¿Por qué desapareció mi reporte del mapa?', a: 'Si un reporte es marcado como falso o resuelto por un administrador, se oculta del mapa público (Radar Ciudadano) para no causar pánico o desinformación. Aún podrás verlo en tu historial personal.' },
-  { id: '11', q: '¿Cómo recupero mi contraseña?', a: 'En la pantalla de Inicio de Sesión, presiona "Olvidé mi contraseña". Te enviaremos un correo con un enlace seguro para restablecerla. Asegúrate de revisar tu bandeja de Spam.' },
-  { id: '12', q: '¿Qué es la Autenticación 2FA?', a: 'La Autenticación de Dos Factores (2FA) añade una capa extra de seguridad. Además de tu contraseña, necesitarás un código temporal que se envía a tu correo para acceder a Halo.' }
+  { id: '11', q: '¿Cómo recupero mi contraseña?', a: 'En la pantalla de Inicio de Sesión, presiona "Olvidé mi contraseña". Te enviaremos un correo con un enlace seguro para restablecerla. Asegúrate de revisar tu bandeja de Spam.' }
 ];
 
 const HelpPage = () => {
@@ -28,26 +27,26 @@ const HelpPage = () => {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
-  
+
   const supportRef = useRef(null);
 
-  const filteredFaqs = faqsData.filter(faq => 
-    faq.q.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  const filteredFaqs = faqsData.filter(faq =>
+    faq.q.toLowerCase().includes(searchQuery.toLowerCase()) ||
     faq.a.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleSupportSubmit = (e) => {
     e.preventDefault();
     if (!subject.trim() || !message.trim()) return;
-    
+
     setIsSubmitting(true);
-    
+
     createSupportMessage({ subject: subject.trim(), message: message.trim() })
       .then(() => {
         alert('Mensaje enviado. El equipo de soporte técnico revisará tu consulta. Te contactaremos en breve.');
         setSubject('');
-      setMessage('');
-      setIsSubmitting(false);
+        setMessage('');
+        setIsSubmitting(false);
       })
       .catch((err) => {
         alert(getApiErrorMessage(err));
@@ -67,10 +66,10 @@ const HelpPage = () => {
           <p className="text-text-secondary text-sm mt-1">Encuentra respuestas o contacta con nuestro equipo.</p>
         </div>
 
-        <Input 
-          placeholder="Busca tu pregunta aquí..." 
-          leftIcon={<Search className="h-4 w-4" />} 
-          className="py-3" 
+        <Input
+          placeholder="Busca tu pregunta aquí..."
+          leftIcon={<Search className="h-4 w-4" />}
+          className="py-3"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -140,9 +139,9 @@ const HelpPage = () => {
             </CardHeader>
             <CardContent>
               <form className="space-y-4" onSubmit={handleSupportSubmit}>
-                <Input 
-                  label="Asunto" 
-                  placeholder="Ej: No puedo subir imágenes al reporte" 
+                <Input
+                  label="Asunto"
+                  placeholder="Ej: No puedo subir imágenes al reporte"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   required
@@ -159,7 +158,7 @@ const HelpPage = () => {
                   />
                 </div>
                 <div className="flex justify-end gap-3 pt-2">
-                  <Button variant="ghost" size="sm" type="button" onClick={() => {setSubject(''); setMessage('')}}>Limpiar</Button>
+                  <Button variant="ghost" size="sm" type="button" onClick={() => { setSubject(''); setMessage('') }}>Limpiar</Button>
                   <Button type="submit" size="sm" isLoading={isSubmitting} leftIcon={!isSubmitting ? <CheckCircle className="h-4 w-4" /> : null}>
                     {isSubmitting ? 'Enviando...' : 'Enviar Mensaje'}
                   </Button>
@@ -185,7 +184,7 @@ const HelpPage = () => {
               <p className="text-sm text-text-secondary leading-relaxed">
                 Si te encuentras en una situación de peligro inminente, toca cualquier número para llamar de inmediato:
               </p>
-              
+
               <div className="space-y-3">
                 <a href="tel:110" className="flex items-center justify-between p-3 rounded-xl border border-border hover:border-[#3b82f6] hover:bg-[#3b82f6]/5 transition-all group">
                   <div className="flex items-center gap-3">
@@ -199,7 +198,7 @@ const HelpPage = () => {
                   </div>
                   <span className="text-xl font-display font-bold text-[#3b82f6]">110</span>
                 </a>
-                
+
                 <a href="tel:119" className="flex items-center justify-between p-3 rounded-xl border border-border hover:border-danger hover:bg-danger/5 transition-all group">
                   <div className="flex items-center gap-3">
                     <div className="h-10 w-10 bg-danger/10 text-danger rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -226,7 +225,7 @@ const HelpPage = () => {
                   <span className="text-xl font-display font-bold text-success">165</span>
                 </a>
               </div>
-              
+
               <Button className="w-full mt-2" variant="outline" onClick={() => setShowEmergencyModal(false)}>
                 Entendido, cerrar
               </Button>

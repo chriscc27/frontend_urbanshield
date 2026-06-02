@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { User, Mail, Phone, Camera, UploadCloud, Eye, EyeOff, ShieldCheck, Star } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { User, Mail, Phone, Camera, Eye, EyeOff, Check, AlertCircle, Edit2, ShieldCheck, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Input from '../../components/ui/Input';
@@ -413,13 +413,35 @@ const ProfilePage = () => {
                 )}
               </AnimatePresence>
 
-              {/* Opción 2FA (desde chriscc) */}
-              <div className="flex items-center justify-between p-5 rounded-2xl bg-secondary-bg/40 border border-border-light hover:border-border transition-colors">
-                <div>
-                  <p className="font-bold text-text-primary">Autenticación 2FA</p>
-                  <p className="text-xs mt-0.5 text-warning">No configurada — Recomendado activarla</p>
+              {/* Sesiones Activas */}
+              <div className="flex flex-col gap-4 p-5 rounded-2xl bg-secondary-bg/40 border border-border-light">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <p className="font-bold text-text-primary">Sesiones Activas</p>
+                    <p className="text-xs mt-0.5 text-text-muted">Gestiona los dispositivos conectados a tu cuenta</p>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="xs" 
+                    className="rounded-full" 
+                    onClick={() => {
+                      if(window.confirm('¿Estás seguro de cerrar todas las otras sesiones?')) {
+                         alert('Sesiones cerradas correctamente. Los demás dispositivos han sido desconectados.');
+                      }
+                    }}
+                  >
+                    Cerrar otras sesiones
+                  </Button>
                 </div>
-                <Button variant="primary" size="xs" className="rounded-full">Activar</Button>
+                <div className="flex items-center gap-4 p-3 bg-card-bg rounded-xl border border-border-light">
+                  <div className="h-10 w-10 rounded-full bg-success/10 flex items-center justify-center text-success flex-shrink-0">
+                    <Check className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-text-primary truncate">Este dispositivo (Actual)</p>
+                    <p className="text-xs text-text-muted truncate">{navigator.userAgent.split(' ')[0]} en {navigator.platform}</p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>

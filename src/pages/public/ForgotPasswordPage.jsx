@@ -17,7 +17,8 @@ const ForgotPasswordPage = () => {
     setError('');
     setMessage('');
     try {
-      const result = await forgotPassword(email);
+      const cleanEmail = email.trim();
+      const result = await forgotPassword(cleanEmail);
       setMessage(result?.message || 'Revisa tu correo para continuar.');
     } catch (err) {
       setError(getApiErrorMessage(err));
