@@ -119,7 +119,7 @@ const AdminDashboard = () => {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <Card className="h-full">
+          <Card className="h-full flex flex-col">
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div>
@@ -132,20 +132,20 @@ const AdminDashboard = () => {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="pb-6">
-              <div className="relative w-full">
+            <CardContent className="pb-6 flex-1 flex flex-col">
+              <div className="relative w-full flex-1 flex flex-col">
                 {/* Eje Y: etiquetas a la izquierda */}
-                <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] text-text-muted pr-2">
+                <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-[10px] text-text-muted pr-2">
                   {[maxIncidents, Math.floor(maxIncidents * 0.75), Math.floor(maxIncidents * 0.5), Math.floor(maxIncidents * 0.25), 0].map((v, idx) => (
                     <span key={idx} className="leading-none">{v}</span>
                   ))}
                 </div>
 
                 {/* Área del gráfico con scroll horizontal si es necesario */}
-                <div className="ml-12 overflow-x-auto">
-                  <div className="min-w-[500px]"> {/* Ancho mínimo para que no se aplaste */}
+                <div className="ml-12 overflow-x-auto flex-1 flex flex-col">
+                  <div className="min-w-[500px] h-full flex flex-col"> {/* Ancho mínimo para que no se aplaste */}
                     {/* Contenedor de barras */}
-                    <div className="h-64 border-b border-l border-border pt-2 flex items-end gap-1">
+                    <div className="flex-1 border-b border-l border-border pt-2 flex items-end gap-1">
                       {chartBars.map((bar, i) => (
                         <div key={i} className="flex-1 min-w-[8px] h-full flex flex-col justify-end group relative">
                           <div
