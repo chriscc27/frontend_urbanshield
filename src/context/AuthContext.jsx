@@ -31,6 +31,11 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const updateCurrentUser = (nextUser) => {
+    setUser(nextUser);
+    localStorage.setItem('user', JSON.stringify(nextUser));
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     if (!token) {
@@ -79,6 +84,7 @@ export const AuthProvider = ({ children }) => {
       login,
       register,
       logout,
+      updateCurrentUser,
     }),
     [user, loading],
   );

@@ -3,7 +3,8 @@ import { HelpCircle, MessageCircle, FileText, Phone, ChevronDown, ChevronRight, 
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import { useNotifications } from '../../context/NotificationContext';
+import { createSupportMessage } from '../../services/supportApi';
+import { getApiErrorMessage } from '../../services/api';
 
 const faqsData = [
   { id: '1', q: '¿Cómo reporto un incidente?', a: 'Ve a "Nuevo Reporte", selecciona la categoría del incidente, completa la descripción y activa tu GPS para compartir la ubicación exacta. El reporte se publicará en el Radar Ciudadano para ser verificado por la comunidad.' },
@@ -28,7 +29,6 @@ const HelpPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
   
-  const { addNotification } = useNotifications();
   const supportRef = useRef(null);
 
   const filteredFaqs = faqsData.filter(faq => 
@@ -42,21 +42,17 @@ const HelpPage = () => {
     
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      addNotification({
-        id: Date.now().toString(),
-        type: 'success',
-        title: 'Mensaje enviado',
-        message: 'El equipo de soporte técnico revisará tu consulta. Te contactaremos en breve.',
-        isRead: false,
-        createdAt: new Date().toISOString()
-      });
-      
-      setSubject('');
+    createSupportMessage({ subject: subject.trim(), message: message.trim() })
+      .then(() => {
+        alert('Mensaje enviado. El equipo de soporte técnico revisará tu consulta. Te contactaremos en breve.');
+        setSubject('');
       setMessage('');
       setIsSubmitting(false);
-    }, 1500);
+      })
+      .catch((err) => {
+        alert(getApiErrorMessage(err));
+        setIsSubmitting(false);
+      });
   };
 
   const scrollToSupport = () => {

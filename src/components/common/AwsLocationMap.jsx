@@ -36,20 +36,57 @@ const AwsLocationMap = ({
   const mapRef = useRef(null);
   const markerRefs = useRef([]);
   const userLocationMarkerRef = useRef(null);
+  const [resolvedCenter, setResolvedCenter] = React.useState(null);
   const config = useMemo(() => getLocationConfig(), []);
 
-  const setUserLocation = (map) => {
-    if (!centerOnUserLocation || typeof navigator === 'undefined' || !navigator.geolocation) {
-      return;
+  useEffect(() => {
+    if (typeof window === 'undefined' || !config || resolvedCenter) return undefined;
+
+    let cancelled = false;
+    const fallback = Array.isArray(center) && center.length === 2 ? center : [-63.18, -17.78];
+
+    if (centerOnUserLocation && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          if (cancelled) return;
+          setResolvedCenter([position.coords.longitude, position.coords.latitude]);
+        },
+        () => {
+          if (!cancelled) setResolvedCenter(fallback);
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 },
+      );
+    } else {
+      setResolvedCenter(fallback);
     }
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const userCenter = [position.coords.longitude, position.coords.latitude];
-        map.flyTo({ center: userCenter, zoom: userLocationZoom, duration: 1200 });
+    return () => {
+      cancelled = true;
+    };
+  }, [config, center, centerOnUserLocation, resolvedCenter]);
 
-        if (!showUserLocationMarker) return;
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    if (!mapContainerRef.current || mapRef.current || !config || !resolvedCenter) return undefined;
 
+    const map = new maplibregl.Map({
+      container: mapContainerRef.current,
+      style: config.styleUrl,
+      center: resolvedCenter,
+      zoom: zoom,
+      preserveDrawingBuffer,
+      attributionControl: showAttribution,
+    });
+
+    if (showNavigation) {
+      map.addControl(new maplibregl.NavigationControl(), 'top-right');
+    }
+
+    map.on('load', () => {
+      map.resize();
+      if (typeof onMapReady === 'function') onMapReady(map);
+
+      if (centerOnUserLocation && showUserLocationMarker) {
         if (userLocationMarkerRef.current) {
           userLocationMarkerRef.current.remove();
         }
@@ -63,37 +100,9 @@ const AwsLocationMap = ({
         markerElement.style.background = '#4c9f70';
 
         userLocationMarkerRef.current = new maplibregl.Marker({ element: markerElement, anchor: 'center' })
-          .setLngLat(userCenter)
+          .setLngLat(resolvedCenter)
           .addTo(map);
-      },
-      () => {
-        // Keep the default center if location access is denied.
-      },
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 },
-    );
-  };
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return undefined;
-    if (!mapContainerRef.current || mapRef.current || !config) return undefined;
-
-    const map = new maplibregl.Map({
-      container: mapContainerRef.current,
-      style: config.styleUrl,
-      center: center, // Usamos el valor inicial
-      zoom: zoom,
-      preserveDrawingBuffer,
-      attributionControl: showAttribution,
-    });
-
-    if (showNavigation) {
-      map.addControl(new maplibregl.NavigationControl(), 'top-right');
-    }
-
-    map.on('load', () => {
-      map.resize();
-      setUserLocation(map);
-      if (typeof onMapReady === 'function') onMapReady(map);
+      }
     });
 
     if (onMapClick) {
@@ -124,7 +133,7 @@ const AwsLocationMap = ({
       map.remove();
       mapRef.current = null;
     };
-  }, [config, onMapReady, preserveDrawingBuffer, showAttribution, showNavigation, showUserLocationMarker]); // Quitamos center y zoom para evitar recrear el mapa
+  }, [config, onMapReady, preserveDrawingBuffer, resolvedCenter, showAttribution, showNavigation, showUserLocationMarker]);
 
   // Efecto para actualizar el centro sin recrear el mapa
   useEffect(() => {
@@ -183,6 +192,19 @@ const AwsLocationMap = ({
           <p className="text-sm font-semibold text-text-primary">Falta configurar Amazon Location</p>
           <p className="mt-2 text-xs text-text-muted">
             Define VITE_AWS_LOCATION_REGION, VITE_AWS_LOCATION_MAP_NAME y VITE_AWS_LOCATION_API_KEY para mostrar el mapa.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!resolvedCenter) {
+    return (
+      <div className={`flex h-full w-full items-center justify-center rounded-2xl border border-dashed border-border bg-[var(--color-card-bg)] ${className}`.trim()}>
+        <div className="max-w-md text-center p-6">
+          <p className="text-sm font-semibold text-text-primary">Obteniendo ubicación...</p>
+          <p className="mt-2 text-xs text-text-muted">
+            Estamos centrando el mapa en tu posición antes de mostrarlo.
           </p>
         </div>
       </div>

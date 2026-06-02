@@ -5,6 +5,7 @@ export const useAsyncData = (fetcher, deps = []) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [trigger, setTrigger] = useState(0);
 
   useEffect(() => {
     let active = true;
@@ -23,7 +24,9 @@ export const useAsyncData = (fetcher, deps = []) => {
     return () => {
       active = false;
     };
-  }, deps);
+  }, [...deps, trigger]);
 
-  return { data, loading, error, setData };
+  const refetch = () => setTrigger((prev) => prev + 1);
+
+  return { data, loading, error, setData, refetch };
 };

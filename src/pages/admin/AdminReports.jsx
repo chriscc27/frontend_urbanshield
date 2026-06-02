@@ -129,7 +129,7 @@ const AdminReports = () => {
           time: f.date,
           statusRaw: f.statusRaw, // 'new', 'dispatched', 'resolved'
           priority: f.priority,
-          reporter: r.userId?.slice(0, 8) || 'Ciudadano',
+          reporter: f.reporter || r.userId?.slice(0, 8) || 'Ciudadano',
         };
       });
 
