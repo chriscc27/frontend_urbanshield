@@ -18,7 +18,6 @@ const CATEGORIES = [
   { value: 'delito', label: 'Delito / Robo', icon: ShieldAlert, animation: { opacity: [1, 0.6, 1], scale: [1, 1.05, 1] }, color: 'text-red-500', bgHover: 'hover:border-red-500 hover:bg-red-500/10 hover:shadow-red-500/20' },
   { value: 'accidente', label: 'Accidente de Tránsito', icon: Car, animation: { rotate: [-2, 2, -2], y: [0, -2, 0] }, color: 'text-yellow-500', bgHover: 'hover:border-yellow-500 hover:bg-yellow-500/10 hover:shadow-yellow-500/20' },
   { value: 'bloqueo', label: 'Bloqueo Vial', icon: Construction, animation: { scale: [1, 1.08, 1], opacity: [1, 0.8, 1] }, color: 'text-amber-500', bgHover: 'hover:border-amber-500 hover:bg-amber-500/10 hover:shadow-amber-500/20' },
-  { value: 'infraestructura', label: 'Falla Urbana', icon: AlertTriangle, animation: { rotate: [-5, 5, -5] }, color: 'text-gray-400', bgHover: 'hover:border-gray-500 hover:bg-gray-500/10 hover:shadow-gray-500/20' },
   { value: 'otros', label: 'Otros', icon: MoreHorizontal, animation: { scale: [1, 1.2, 1], opacity: [0.7, 1, 0.7] }, color: 'text-primary', bgHover: 'hover:border-primary hover:bg-primary/10 hover:shadow-primary/20' },
 ];
 
@@ -48,11 +47,11 @@ const slideVariants = {
 const CreateReport = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  
+
   // Wizard state
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1);
-  
+
   // Form state
   const [selectedCat, setSelectedCat] = useState('');
   const [customCategory, setCustomCategory] = useState('');
@@ -63,7 +62,7 @@ const CreateReport = () => {
   const [gpsActive, setGpsActive] = useState(false);
   const [files, setFiles] = useState([]);
   const [imagePreviewUrls, setImagePreviewUrls] = useState([]);
-  
+
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -115,13 +114,13 @@ const CreateReport = () => {
     const incoming = Array.from(list || []).filter((f) =>
       ['image/jpeg', 'image/png', 'image/webp'].includes(f.type),
     );
-    
+
     if (incoming.length === 0) return;
-    
+
     // Limite 5 fotos máximo
     const newFiles = [...files, ...incoming].slice(0, 5);
     setFiles(newFiles);
-    
+
     // Crear URLs para thumbnails
     const newUrls = newFiles.map(file => URL.createObjectURL(file));
     setImagePreviewUrls(newUrls);
@@ -130,7 +129,7 @@ const CreateReport = () => {
   const removeImage = (indexToRemove) => {
     const newFiles = files.filter((_, idx) => idx !== indexToRemove);
     setFiles(newFiles);
-    
+
     // Cleanup de la URL removida para no tener fugas de memoria
     URL.revokeObjectURL(imagePreviewUrls[indexToRemove]);
     setImagePreviewUrls(newFiles.map(f => URL.createObjectURL(f)));
@@ -157,7 +156,7 @@ const CreateReport = () => {
 
   const nextStep = () => {
     setError('');
-    
+
     // Validación Paso 1
     if (step === 1) {
       if (!selectedCat) {
@@ -169,7 +168,7 @@ const CreateReport = () => {
         return;
       }
     }
-    
+
     // Validación Paso 2
     if (step === 2) {
       if (!form.location || form.location.trim().length < 5) {
@@ -206,7 +205,7 @@ const CreateReport = () => {
     setError('');
     try {
       const media = files.length ? await uploadImages() : { imageUrl: null, imageKeys: [] };
-      
+
       const finalCategory = selectedCat === 'otros' ? customCategory.trim() : selectedCat;
 
       await createReport({
@@ -220,7 +219,7 @@ const CreateReport = () => {
         imageUrl: media.imageUrl || undefined,
         imageKeys: media.imageKeys.length ? media.imageKeys : undefined,
       });
-      
+
       setShowSuccess(true);
       setTimeout(() => navigate('/reports'), 3500);
     } catch (err) {
@@ -231,13 +230,13 @@ const CreateReport = () => {
 
   if (showSuccess) {
     return (
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9 }} 
-        animate={{ opacity: 1, scale: 1 }} 
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
         className="max-w-md mx-auto mt-20"
       >
         <div className="surface-card rounded-[2rem] p-12 text-center border border-success/20 shadow-2xl shadow-success/10 relative overflow-hidden bg-card-bg">
-          <motion.div 
+          <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: [0, 1.2, 1] }}
             transition={{ type: "spring", duration: 0.6 }}
@@ -247,8 +246,8 @@ const CreateReport = () => {
           </motion.div>
           <h2 className="text-3xl font-bold text-text-primary font-display mb-3">¡Reporte Enviado!</h2>
           <p className="text-text-secondary text-sm">Tu reporte ha sido registrado con éxito y las autoridades correspondientes han sido notificadas inmediatamente.</p>
-          
-          <motion.div 
+
+          <motion.div
             className="absolute -bottom-20 -left-20 w-40 h-40 bg-success/20 rounded-full blur-3xl"
             animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0.8, 0.5] }}
             transition={{ repeat: Infinity, duration: 4 }}
@@ -270,19 +269,18 @@ const CreateReport = () => {
             <p className="text-sm text-text-muted">Aporta información valiosa y salva vidas</p>
           </div>
         </div>
-        
+
         {/* Minimalist Progress Pill */}
         <div className="flex bg-secondary-bg/60 border border-border/60 rounded-full p-1.5 shadow-inner backdrop-blur-sm">
           {STEPS.map((s) => (
-            <div 
-              key={s.id} 
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 ${
-                step === s.id 
-                  ? 'bg-primary text-white shadow-md scale-105' 
-                  : step > s.id 
-                    ? 'text-primary' 
-                    : 'text-text-muted opacity-60'
-              }`}
+            <div
+              key={s.id}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 ${step === s.id
+                ? 'bg-primary text-white shadow-md scale-105'
+                : step > s.id
+                  ? 'text-primary'
+                  : 'text-text-muted opacity-60'
+                }`}
             >
               {step > s.id ? <Check className="h-4 w-4" /> : <span className={`h-5 w-5 flex items-center justify-center rounded-full text-[10px] ${step === s.id ? 'bg-white/20' : 'bg-black/10'}`}>{s.id}</span>}
               <span className={step === s.id ? 'block' : 'hidden sm:block'}>{s.title}</span>
@@ -300,7 +298,7 @@ const CreateReport = () => {
       {/* No usamos 'absolute' aquí para que el div crezca con su contenido */}
       <div className="relative overflow-visible">
         <AnimatePresence mode="wait" custom={direction}>
-          
+
           {/* STEP 1: CATEGORY */}
           {step === 1 && (
             <motion.div
@@ -327,13 +325,12 @@ const CreateReport = () => {
                           whileTap={{ scale: 0.98 }}
                           key={cat.value}
                           onClick={() => setSelectedCat(cat.value)}
-                          className={`flex flex-col items-center justify-center gap-3 p-6 rounded-2xl border transition-all duration-300 ${
-                            isSelected
-                              ? 'bg-primary/10 border-primary shadow-[0_0_20px_rgba(47,93,80,0.15)] ring-1 ring-primary'
-                              : `bg-secondary-bg/60 border-border ${cat.bgHover}`
-                          }`}
+                          className={`flex flex-col items-center justify-center gap-3 p-6 rounded-2xl border transition-all duration-300 ${isSelected
+                            ? 'bg-primary/10 border-primary shadow-[0_0_20px_rgba(47,93,80,0.15)] ring-1 ring-primary'
+                            : `bg-secondary-bg/60 border-border ${cat.bgHover}`
+                            }`}
                         >
-                          <motion.div 
+                          <motion.div
                             animate={isSelected ? cat.animation : { scale: 1, rotate: 0, y: 0, opacity: 1 }}
                             transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
                             className={isSelected ? cat.color : 'text-text-secondary'}
@@ -347,7 +344,7 @@ const CreateReport = () => {
                       );
                     })}
                   </div>
-                  
+
                   <AnimatePresence>
                     {selectedCat === 'otros' && (
                       <motion.div
@@ -445,7 +442,7 @@ const CreateReport = () => {
                   </CardHeader>
                   <CardContent className="space-y-5 pt-6">
                     <Input name="title" value={form.title} onChange={handleChange} label="Título corto" placeholder="Ej. Accidente fuerte en la avenida" required />
-                    
+
                     <div>
                       <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide text-[11px]">Descripción de la situación</label>
                       <textarea
@@ -457,14 +454,14 @@ const CreateReport = () => {
                         placeholder="Describe qué pasó, si hay heridos, etc."
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-bold text-text-primary mb-2 uppercase tracking-wide text-[11px]">Nivel de Urgencia</label>
                       <div className="relative">
-                        <select 
-                          name="priority" 
-                          value={form.priority} 
-                          onChange={handleChange} 
+                        <select
+                          name="priority"
+                          value={form.priority}
+                          onChange={handleChange}
                           className="block w-full rounded-xl text-text-primary text-sm bg-secondary-bg/60 border border-border-light focus:outline-none focus:ring-2 focus:ring-primary/50 py-3.5 px-4 appearance-none cursor-pointer transition-shadow hover:bg-secondary-bg"
                         >
                           <option value="">Selecciona urgencia...</option>
@@ -484,15 +481,14 @@ const CreateReport = () => {
                 <Card className="border-border-light bg-secondary-bg/20 backdrop-blur-md rounded-[2rem] shadow-xl">
                   <CardContent className="pt-6">
                     <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" multiple className="hidden" onChange={(e) => addFiles(e.target.files)} />
-                    
+
                     <div
                       onClick={() => fileInputRef.current?.click()}
                       onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
                       onDragLeave={() => setDragging(false)}
                       onDrop={(e) => { e.preventDefault(); setDragging(false); addFiles(e.dataTransfer.files); }}
-                      className={`border-2 border-dashed rounded-[1.5rem] p-8 text-center cursor-pointer transition-all duration-300 ${
-                        dragging ? 'border-primary bg-primary/10 scale-[1.02] shadow-inner' : 'border-border hover:border-primary/50 hover:bg-secondary-bg/50'
-                      }`}
+                      className={`border-2 border-dashed rounded-[1.5rem] p-8 text-center cursor-pointer transition-all duration-300 ${dragging ? 'border-primary bg-primary/10 scale-[1.02] shadow-inner' : 'border-border hover:border-primary/50 hover:bg-secondary-bg/50'
+                        }`}
                     >
                       <UploadCloud className={`mx-auto h-8 w-8 mb-2 ${dragging ? 'text-primary' : 'text-text-muted'}`} />
                       <p className="text-sm font-medium text-text-primary">Evidencia Fotográfica (Opcional)</p>
@@ -523,7 +519,7 @@ const CreateReport = () => {
                       <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 gap-3">
                         <AnimatePresence>
                           {imagePreviewUrls.map((url, idx) => (
-                            <motion.div 
+                            <motion.div
                               key={url}
                               initial={{ opacity: 0, scale: 0.8 }}
                               animate={{ opacity: 1, scale: 1 }}
@@ -532,9 +528,9 @@ const CreateReport = () => {
                             >
                               <img src={url} alt={`Preview ${idx + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                              <button 
-                                type="button" 
-                                onClick={(e) => { e.stopPropagation(); removeImage(idx); }} 
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
                                 className="absolute top-2 right-2 h-7 w-7 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center hover:bg-danger hover:scale-110 transition-all shadow-md"
                               >
                                 <X className="h-4 w-4" />

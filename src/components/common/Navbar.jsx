@@ -29,15 +29,14 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 py-4 transition-colors duration-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div 
-          className={`flex justify-between items-center transition-[background-color,border-color,box-shadow,padding,border-radius] duration-300 ease-in-out w-full ${
-            scrolled 
-              ? 'glass-premium rounded-full px-6 h-14 border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]' 
-              : 'h-14 bg-transparent border-transparent px-2'
-          }`}
+        <div
+          className={`flex justify-between items-center transition-[background-color,border-color,box-shadow,padding,border-radius] duration-300 ease-in-out w-full ${scrolled
+            ? 'glass-premium rounded-full px-6 h-14 border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.08)]'
+            : 'h-14 bg-transparent border-transparent px-2'
+            }`}
           style={{ willChange: 'background-color, border-color, box-shadow, padding, border-radius' }}
         >
-          
+
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
             <div className="flex items-center justify-center transition-[background-color,border-color] duration-200 h-9 w-9 rounded-xl bg-primary/10 border border-primary/20 text-primary group-hover:bg-primary/20">
@@ -47,7 +46,7 @@ const Navbar = () => {
               Halo
             </span>
           </Link>
- 
+
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-2">
             {links.map((link, i) =>
@@ -55,11 +54,10 @@ const Navbar = () => {
                 <NavLink
                   key={i}
                   to={link.to}
-                  className={({ isActive }) => `px-4 py-2 text-sm font-medium rounded-full transition-[color,background-color] duration-200 ${
-                    isActive 
-                      ? 'text-primary bg-primary/10 shadow-sm' 
-                      : 'text-text-secondary hover:text-text-primary hover:bg-black/5'
-                  }`}
+                  className={({ isActive }) => `px-4 py-2 text-sm font-medium rounded-full transition-[color,background-color] duration-200 ${isActive
+                    ? 'text-primary bg-primary/10 shadow-sm'
+                    : 'text-text-secondary hover:text-text-primary hover:bg-black/5'
+                    }`}
                 >
                   {link.label}
                 </NavLink>
@@ -74,7 +72,7 @@ const Navbar = () => {
               )
             )}
           </div>
- 
+
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
             <Link to="/login">
@@ -86,7 +84,7 @@ const Navbar = () => {
               </Button>
             </Link>
           </div>
- 
+
           {/* Mobile toggle */}
           <button
             className="md:hidden p-2 rounded-full transition-colors text-text-secondary hover:text-text-primary hover:bg-black/5"
