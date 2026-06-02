@@ -43,7 +43,7 @@ const CATEGORY_MAP = {
   }
 };
 
-const AdminMap = () => {
+const CitizenMap = () => {
   const { data, loading, refetch } = usePolling(() => getMapMarkers(), [], 15000);
   const [selectedReport, setSelectedReport] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
@@ -923,4 +923,4 @@ const ReportDetailsModal = ({ reportId, onClose, votedMap, onVote, voting }) => 
   );
 };
 
-export default AdminMap;
+export default CitizenMap;

@@ -206,12 +206,15 @@ const CreateReport = () => {
     try {
       const media = files.length ? await uploadImages() : { imageUrl: null, imageKeys: [] };
 
-      const finalCategory = selectedCat === 'otros' ? customCategory.trim() : selectedCat;
+      const finalCategory = selectedCat === 'otros' ? 'otros' : selectedCat;
+      const finalDescription = selectedCat === 'otros'
+        ? `[Otros: ${customCategory.trim()}] ${form.description.trim()}`
+        : form.description.trim();
 
       await createReport({
         title: form.title.trim(),
         category: finalCategory,
-        description: form.description.trim(),
+        description: finalDescription,
         latitude: Number(form.latitude),
         longitude: Number(form.longitude),
         location: form.location?.trim() || undefined,
@@ -493,25 +496,7 @@ const CreateReport = () => {
                       <UploadCloud className={`mx-auto h-8 w-8 mb-2 ${dragging ? 'text-primary' : 'text-text-muted'}`} />
                       <p className="text-sm font-medium text-text-primary">Evidencia Fotográfica (Opcional)</p>
                       <p className="text-xs text-text-muted mt-1">Arrastra fotos aquí o haz clic</p>
-                      {files.length > 0 && (
-                        <div className="mt-4 grid grid-cols-5 gap-2" onClick={(e) => e.stopPropagation()}>
-                          {files.map((file, idx) => (
-                            <div key={idx} className="relative aspect-square rounded-lg overflow-hidden border border-border-light group">
-                              <img src={URL.createObjectURL(file)} alt="preview" className="w-full h-full object-cover" />
-                              <button
-                                type="button"
-                                className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setFiles(prev => prev.filter((_, i) => i !== idx));
-                                }}
-                              >
-                                <AlertCircle className="h-3 w-3" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+
                     </div>
 
                     {/* Image Thumbnails Grid */}
