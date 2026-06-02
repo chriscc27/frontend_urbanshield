@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { User, Mail, Phone, Camera, Eye, EyeOff, Check, AlertCircle, Edit2, ShieldCheck, Star } from 'lucide-react';
+import { User, Mail, Phone, Camera, Eye, EyeOff, Check, AlertCircle, Edit2, ShieldCheck, Star, UploadCloud } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Card, { CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import Input from '../../components/ui/Input';

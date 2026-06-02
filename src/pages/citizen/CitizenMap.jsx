@@ -14,32 +14,32 @@ const CATEGORY_MAP = {
   incendio: {
     label: 'Incendio',
     color: '#f97316', // Orange
-    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`
+    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`
   },
   inundacion: {
     label: 'Inundación',
     color: '#3b82f6', // Blue
-    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6c.6.5 1.2 1 2.5 1C5.8 7 7 5.6 8.5 5.6c1.5 0 2.7 1.4 4 1.4 1.3 0 2.5-1.4 4-1.4 1.5 0 2.7 1.4 4 1.4M2 12c.6.5 1.2 1 2.5 1 1.3 0 2.5-1.4 4-1.4 1.5 0 2.7 1.4 4 1.4 1.3 0 2.5-1.4 4-1.4 1.5 0 2.7 1.4 4 1.4M2 18c.6.5 1.2 1 2.5 1 1.3 0 2.5-1.4 4-1.4 1.5 0 2.7 1.4 4 1.4 1.3 0 2.5-1.4 4-1.4 1.5 0 2.7 1.4 4 1.4"/></svg>`
+    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 6c.6.5 1.2 1 2.5 1C5.8 7 7 5.6 8.5 5.6c1.5 0 2.7 1.4 4 1.4 1.3 0 2.5-1.4 4-1.4 1.5 0 2.7 1.4 4 1.4M2 12c.6.5 1.2 1 2.5 1 1.3 0 2.5-1.4 4-1.4 1.5 0 2.7 1.4 4 1.4 1.3 0 2.5-1.4 4-1.4 1.5 0 2.7 1.4 4 1.4M2 18c.6.5 1.2 1 2.5 1 1.3 0 2.5-1.4 4-1.4 1.5 0 2.7 1.4 4 1.4 1.3 0 2.5-1.4 4-1.4 1.5 0 2.7 1.4 4 1.4"/></svg>`
   },
   delito: {
     label: 'Delito / Robo',
     color: '#ef4444', // Red
-    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 9.7a1 1 0 0 1-.68 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 .76-.97l8-2a1 1 0 0 1 .48 0l8 2A1 1 0 0 1 20 6z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>`
+    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 9.7a1 1 0 0 1-.68 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 .76-.97l8-2a1 1 0 0 1 .48 0l8 2A1 1 0 0 1 20 6z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>`
   },
   accidente: {
     label: 'Accidente de Tránsito',
     color: '#0ea5e9', // Celeste / Sky Blue
-    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>`
+    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>`
   },
   bloqueo: {
     label: 'Bloqueo Vial',
     color: '#f59e0b', // Amber
-    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="8" rx="1"/><path d="M17 14v7"/><path d="M7 14v7"/><path d="M17 3v3"/><path d="M7 3v3"/><path d="M10 14 2.3 6.3"/><path d="M14 6 21.7 13.7"/><path d="M18 14 10.3 6.3"/><path d="M14 14 6.3 6.3"/></svg>`
+    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="8" rx="1"/><path d="M17 14v7"/><path d="M7 14v7"/><path d="M17 3v3"/><path d="M7 3v3"/><path d="M10 14 2.3 6.3"/><path d="M14 6 21.7 13.7"/><path d="M18 14 10.3 6.3"/><path d="M14 14 6.3 6.3"/></svg>`
   },
   otros: {
     label: 'Otro',
     color: '#4c9f70', // Teal/Green
-    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`
+    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`
   }
 };
 
@@ -153,7 +153,7 @@ const CitizenMap = () => {
         <!-- Community Verification Badge -->
         ${marker.status === 'verified' ? `
           <div style="position: absolute; top: -1px; right: -1px; width: 12px; height: 12px; border-radius: 50%; background-color: #10b981; border: 1.5px solid white; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
-            <svg xmlns="http://www.w3.org/2000/svg" width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </div>
         ` : ''}
       </div>
@@ -203,7 +203,7 @@ const CitizenMap = () => {
             </div>
             <div className="flex items-center gap-1.5">
               <span className="h-4 w-4 rounded-full bg-[#10b981] border border-white flex items-center justify-center text-white scale-90">
-                <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               </span>
               Verificado vecinal
             </div>
@@ -464,7 +464,7 @@ const CitizenMap = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="h-4.5 w-4.5 rounded-full bg-[#10b981] flex items-center justify-center text-white scale-90 border border-white" style={{ width: '18px', height: '18px' }}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                     </span>
                     Verificado por la comunidad
                   </div>
@@ -575,8 +575,12 @@ const ReportPopupContent = ({ reportId, onClose, votedMap, onVote, voting, onSho
         <p className="text-text-primary mb-2 line-clamp-3">{report.description || 'Sin descripción'}</p>
         
         <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border-light">
-          <div className="h-6 w-6 bg-primary/20 rounded-full flex items-center justify-center text-[10px] font-bold text-primary flex-shrink-0">
-            {report.reporterName?.[0] || 'C'}
+          <div className="h-6 w-6 bg-primary/20 rounded-full flex items-center justify-center text-[10px] font-bold text-primary flex-shrink-0 overflow-hidden">
+            {report.reporterAvatarUrl ? (
+              <img src={report.reporterAvatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+            ) : (
+              report.reporterName?.[0] || 'C'
+            )}
           </div>
           <div className="flex flex-col">
             <span className="text-xs text-text-muted">Reportado por <span className="font-medium text-text-secondary">{report.reporterName || 'Ciudadano'}</span></span>
@@ -844,8 +848,12 @@ const ReportDetailsModal = ({ reportId, onClose, votedMap, onVote, voting }) => 
 
             <div className="bg-primary/5 rounded-2xl p-4 border border-primary/10 flex items-center justify-between shadow-sm">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 bg-white rounded-full flex items-center justify-center font-bold text-primary text-lg shadow-sm border border-border-light">
-                  {report.reporterName?.[0] || 'C'}
+                <div className="h-10 w-10 bg-white rounded-full flex items-center justify-center font-bold text-primary text-lg shadow-sm border border-border-light overflow-hidden">
+                  {report.reporterAvatarUrl ? (
+                    <img src={report.reporterAvatarUrl} alt="Avatar" className="h-full w-full object-cover" />
+                  ) : (
+                    report.reporterName?.[0] || 'C'
+                  )}
                 </div>
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-0.5">Reportado por</p>
