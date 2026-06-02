@@ -5,7 +5,6 @@ export const INCIDENTS = [
   { id: 'INC-0003', title: 'Accidente de tránsito múltiple', type: 'Accidente', status: 'Resuelto', priority: 'Alta', lat: -17.75, lng: -63.15, location: 'Av. Circunvalación km 5', reporter: 'Carlos R.', date: '2026-05-18T08:05:00Z', description: 'Colisión entre 3 vehículos. 2 personas con heridas leves evacuadas.' },
   { id: 'INC-0004', title: 'Robo a mano armada', type: 'Delito', status: 'Pendiente', priority: 'Alta', lat: -17.77, lng: -63.19, location: 'Banco Nacional, Av. Monseñor', reporter: 'Luis S.', date: '2026-05-18T11:30:00Z', description: 'Ciudadano reporta asalto en las cercanías del banco. Sospechosos huyeron.' },
   { id: 'INC-0005', title: 'Bloqueo vial por manifestación', type: 'Bloqueo vial', status: 'En Progreso', priority: 'Media', lat: -17.76, lng: -63.17, location: 'Plaza Central - Acceso Norte', reporter: 'María T.', date: '2026-05-18T12:00:00Z', description: 'Manifestantes bloquean el acceso norte a plaza central. Tráfico desviado.' },
-  { id: 'INC-0006', title: 'Poste de luz caído', type: 'Infraestructura urbana', status: 'Pendiente', priority: 'Baja', lat: -17.79, lng: -63.16, location: 'Calle 12 y Av. 6', reporter: 'Pedro V.', date: '2026-05-18T07:45:00Z', description: 'Poste de alumbrado público caído sobre la calzada, obstruyendo un carril.' },
 ];
 
 // Usuarios simulados
@@ -40,7 +39,7 @@ export const INCIDENT_CATEGORIES = [
   { value: 'delito', label: 'Delito / Robo', icon: '🚨', color: '#9B59B6' },
   { value: 'accidente', label: 'Accidente de Tránsito', icon: '🚗', color: '#D4A373' },
   { value: 'bloqueo', label: 'Bloqueo Vial', icon: '🚧', color: '#D9932A' },
-  { value: 'infraestructura', label: 'Infraestructura Urbana', icon: '🏗️', color: '#588157' },
+  { value: 'otros', label: 'Otros', icon: '📍', color: '#588157' },
 ];
 
 // Testimonials

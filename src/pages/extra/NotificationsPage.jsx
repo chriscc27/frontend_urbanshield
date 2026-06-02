@@ -21,6 +21,7 @@ const iconByType = {
 const NotificationsPage = () => {
   const { data, loading, error, setData } = useAsyncData(() => listNotifications(), []);
   const [actionError, setActionError] = useState('');
+  const [expandedDetail, setExpandedDetail] = useState(null);
 
   const notifications = data || [];
   const unread = notifications.filter((n) => !n.isRead).length;
@@ -100,6 +101,27 @@ const NotificationsPage = () => {
                     <p className={`text-sm mt-1 leading-relaxed ${!notif.isRead ? 'text-text-secondary' : 'text-text-muted'}`}>
                       {notif.message}
                     </p>
+                    {notif.metadata?.supportMessageId && notif.metadata?.response && (
+                      <div className="mt-3">
+                        <Button 
+                          variant="outline" 
+                          size="xs" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExpandedDetail(expandedDetail === notif.notificationId ? null : notif.notificationId);
+                            if (!notif.isRead) handleMarkRead(notif.notificationId);
+                          }}
+                        >
+                          {expandedDetail === notif.notificationId ? 'Ocultar detalle' : 'Ver detalle'}
+                        </Button>
+                        {expandedDetail === notif.notificationId && (
+                          <div className="mt-3 p-4 bg-secondary-bg/50 border border-border-light rounded-xl text-left shadow-inner">
+                            <p className="text-xs font-bold text-text-primary mb-2 uppercase tracking-wider">Respuesta de Soporte Técnico:</p>
+                            <p className="text-sm text-text-secondary whitespace-pre-wrap">{notif.metadata.response}</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                   {!notif.isRead && <span className="h-2 w-2 bg-primary rounded-full flex-shrink-0 mt-2" />}
                 </button>

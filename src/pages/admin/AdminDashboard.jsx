@@ -25,7 +25,7 @@ const AdminDashboard = () => {
 
   // Real data for trend chart
   const { data: reportsResp } = useAsyncData(() => listReports({ limit: 1000 }), []);
-  const allReports = Array.isArray(reportsResp) ? reportsResp : reportsResp?.items || [];
+  const allReports = Array.isArray(reportsResp) ? reportsResp : (Array.isArray(reportsResp?.data) ? reportsResp.data : (reportsResp?.items || []));
 
   const [startDate, setStartDate] = React.useState(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
   const [endDate, setEndDate] = React.useState(new Date().toISOString().split('T')[0]);
@@ -46,10 +46,18 @@ const AdminDashboard = () => {
   const zoneStats = {};
   allReports.forEach(r => {
     if (r.status === 'resolved' || r.status === 'deleted' || r.status === 'cancelled') return;
-    const code = r.cityCode || 'UNK';
-    if (!zoneStats[code]) zoneStats[code] = { zone: cityNames[code] || code, count: 0, criticalCount: 0 };
-    zoneStats[code].count++;
-    if (r.priority === 'critical') zoneStats[code].criticalCount++;
+
+    let exactZone = r.exactZone || (r.location ? r.location.split(',')[0].trim() : '');
+    if (!exactZone || exactZone.length < 3) {
+      const code = r.cityCode || 'UNK';
+      exactZone = cityNames[code] || code;
+    }
+
+    const key = exactZone.toLowerCase();
+
+    if (!zoneStats[key]) zoneStats[key] = { zone: exactZone, count: 0, criticalCount: 0 };
+    zoneStats[key].count++;
+    if (r.priority === 'critical') zoneStats[key].criticalCount++;
   });
 
   const maxZoneCount = Math.max(...Object.values(zoneStats).map(z => z.count), 1);
@@ -125,28 +133,46 @@ const AdminDashboard = () => {
               </div>
             </CardHeader>
             <CardContent className="pb-6">
-              <div className="relative">
-                <div className="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-[10px] text-text-muted pr-2">
-                  {[maxIncidents, Math.floor(maxIncidents * 0.75), Math.floor(maxIncidents * 0.5), Math.floor(maxIncidents * 0.25), 0].map((v, idx) => <span key={idx}>{v}</span>)}
-                </div>
-                <div className="ml-8 flex items-end justify-between gap-1.5 h-52 border-b border-l border-border pt-2 px-2">
-                  {chartBars.map((bar, i) => (
-                    <div key={i} className="flex-1 flex flex-col justify-end h-full group relative">
-                      <div
-                        className="w-full rounded-t-sm transition-all duration-200 group-hover:brightness-110 cursor-pointer"
-                        style={{
-                          height: `${bar.height}%`,
-                          background: bar.height > 70 ? '#E76F51' : bar.height > 50 ? '#DDA15E' : '#4C9F70',
-                          opacity: 0.8
-                        }}
-                      >
-                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-text-primary text-white border border-text-primary/10 text-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 font-medium">
-                          {bar.count} inc.
-                        </div>
-                      </div>
-                      <span className="text-[10px] text-text-muted text-center mt-1">{i * 2}h</span>
-                    </div>
+              <div className="relative w-full">
+                {/* Eje Y: etiquetas a la izquierda */}
+                <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] text-text-muted pr-2">
+                  {[maxIncidents, Math.floor(maxIncidents * 0.75), Math.floor(maxIncidents * 0.5), Math.floor(maxIncidents * 0.25), 0].map((v, idx) => (
+                    <span key={idx} className="leading-none">{v}</span>
                   ))}
+                </div>
+
+                {/* Área del gráfico con scroll horizontal si es necesario */}
+                <div className="ml-12 overflow-x-auto">
+                  <div className="min-w-[500px]"> {/* Ancho mínimo para que no se aplaste */}
+                    {/* Contenedor de barras */}
+                    <div className="h-64 border-b border-l border-border pt-2 flex items-end gap-1">
+                      {chartBars.map((bar, i) => (
+                        <div key={i} className="flex-1 min-w-[8px] h-full flex flex-col justify-end group relative">
+                          <div
+                            className="w-full rounded-t-sm transition-all duration-200 group-hover:brightness-110 cursor-pointer"
+                            style={{
+                              height: `${bar.height}%`,
+                              background: bar.height > 70 ? '#E76F51' : bar.height > 50 ? '#DDA15E' : '#4C9F70',
+                              opacity: 0.8
+                            }}
+                          >
+                            <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-text-primary text-white border border-text-primary/10 text-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 font-medium pointer-events-none">
+                              {bar.count} inc.
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Etiquetas del eje X */}
+                    <div className="flex items-start gap-1 mt-1 px-0">
+                      {chartBars.map((bar, i) => (
+                        <div key={i} className="flex-1 text-center text-[10px] text-text-muted min-w-[8px]">
+                          {i * 2}h
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -156,7 +182,7 @@ const AdminDashboard = () => {
         {/* Zones */}
         <div className="lg:col-span-1">
           <Card className="h-full">
-            <CardHeader><CardTitle>Zonas Críticas</CardTitle></CardHeader>
+            <CardHeader><CardTitle>Lugares Críticos</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               {dynamicZones.length === 0 && <p className="text-xs text-text-muted">No hay zonas críticas reportadas.</p>}
               {dynamicZones.map((item, i) => (
@@ -227,9 +253,10 @@ const AdminDashboard = () => {
               {[
                 { icon: Flame, label: 'Incendio', key: 'incendio', color: 'text-danger', bar: 'bg-danger' },
                 { icon: Waves, label: 'Inundación', key: 'inundacion', color: 'text-blue-500', bar: 'bg-blue-400' },
-                { icon: ShieldAlert, label: 'Delito', key: 'delito', color: 'text-purple-500', bar: 'bg-purple-400' },
-                { icon: Car, label: 'Accidente', key: 'accidente', color: 'text-warning', bar: 'bg-warning' },
-                { icon: Construction, label: 'Infraestructura', key: 'infraestructura', color: 'text-primary', bar: 'bg-primary' },
+                { icon: ShieldAlert, label: 'Delito / Robo', key: 'delito', color: 'text-purple-500', bar: 'bg-purple-400' },
+                { icon: Car, label: 'Accidente de Tránsito', key: 'accidente', color: 'text-warning', bar: 'bg-warning' },
+                { icon: Construction, label: 'Bloqueo Vial', key: 'bloqueo', color: 'text-orange-500', bar: 'bg-orange-500' },
+                { icon: AlertTriangle, label: 'Otros', key: 'otros', color: 'text-primary', bar: 'bg-primary' },
               ].map((cat, i) => {
                 const count = data?.analytics?.byCategory?.[cat.key] || 0;
                 return (
