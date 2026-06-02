@@ -64,7 +64,7 @@ export const InteractiveSelector = () => {
   return (
     <div className="relative flex flex-col items-center justify-center w-full font-sans text-white"> 
       {/* Options Container */}
-      <div className="options flex w-full max-w-[1000px] min-w-[300px] h-[500px] mx-auto items-stretch overflow-hidden relative rounded-3xl shadow-2xl">
+      <div className="options flex w-full max-w-6xl lg:max-w-7xl min-w-[300px] h-[500px] md:h-[550px] lg:h-[600px] mx-auto items-stretch overflow-hidden relative rounded-3xl shadow-2xl">
         {options.map((option, index) => (
           <div
             key={index}

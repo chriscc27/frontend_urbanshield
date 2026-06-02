@@ -82,6 +82,7 @@ const AppRoutes = () => {
         <Route path="inbox" element={<AdminInbox />} />
         <Route path="notifications" element={<NotificationsPage />} />
         <Route path="profile" element={<ProfilePage />} />
+        <Route path="settings" element={<SettingsPage />} />
       </Route>
 
       <Route path="/citizen" element={<Navigate to="/dashboard" replace />} />
