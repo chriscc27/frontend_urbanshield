@@ -11,6 +11,7 @@ import { updateProfile, updatePassword } from '../../services/authApi';
 import { getPresignedUrl, uploadFileToS3 } from '../../services/uploadsApi';
 import { getApiErrorMessage } from '../../services/api';
 import { useAsyncData } from '../../hooks/useAsyncData';
+import toast from 'react-hot-toast';
 
 // Medidor de fortaleza de contraseña (desde main)
 const calculatePasswordStrength = (password) => {
@@ -89,7 +90,7 @@ const ProfilePage = () => {
       updateCurrentUser(updated);
       setFormData((prev) => ({ ...prev, avatarKey: presigned.key, avatarUrl }));
     } catch (err) {
-      alert(getApiErrorMessage(err));
+      toast.error(getApiErrorMessage(err));
     } finally {
       setAvatarLoading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -103,10 +104,10 @@ const ProfilePage = () => {
     try {
       const updated = await updateProfile(formData);
       updateCurrentUser(updated);
-      alert('Perfil actualizado con éxito');
+      toast.success('Perfil actualizado con éxito');
       setIsEditing(false);
     } catch (err) {
-      alert(getApiErrorMessage(err));
+      toast.error(getApiErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -116,16 +117,16 @@ const ProfilePage = () => {
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     if (pwdData.newPassword !== pwdData.confirmPassword) {
-      return alert('Las contraseñas nuevas no coinciden');
+      return toast.error('Las contraseñas nuevas no coinciden');
     }
     setPwdLoading(true);
     try {
       await updatePassword({ currentPassword: pwdData.currentPassword, newPassword: pwdData.newPassword });
-      alert('Contraseña actualizada con éxito');
+      toast.success('Contraseña actualizada con éxito');
       setShowPasswordForm(false);
       setPwdData({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err) {
-      alert(getApiErrorMessage(err));
+      toast.error(getApiErrorMessage(err));
     } finally {
       setPwdLoading(false);
     }
@@ -432,7 +433,7 @@ const ProfilePage = () => {
                     className="rounded-full" 
                     onClick={() => {
                       if(window.confirm('¿Estás seguro de cerrar todas las otras sesiones?')) {
-                         alert('Sesiones cerradas correctamente. Los demás dispositivos han sido desconectados.');
+                         toast.success('Sesiones cerradas correctamente. Los demás dispositivos han sido desconectados.');
                       }
                     }}
                   >

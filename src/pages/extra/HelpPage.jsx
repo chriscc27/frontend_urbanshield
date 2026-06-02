@@ -5,6 +5,7 @@ import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { createSupportMessage } from '../../services/supportApi';
 import { getApiErrorMessage } from '../../services/api';
+import toast from 'react-hot-toast';
 
 const faqsData = [
   { id: '1', q: '¿Cómo reporto un incidente?', a: 'Ve a "Nuevo Reporte", selecciona la categoría del incidente, completa la descripción y activa tu GPS para compartir la ubicación exacta. El reporte se publicará en el Radar Ciudadano para ser verificado por la comunidad.' },
@@ -43,13 +44,13 @@ const HelpPage = () => {
 
     createSupportMessage({ subject: subject.trim(), message: message.trim() })
       .then(() => {
-        alert('Mensaje enviado. El equipo de soporte técnico revisará tu consulta. Te contactaremos en breve.');
+        toast.success('Mensaje enviado. El equipo de soporte técnico revisará tu consulta. Te contactaremos en breve.');
         setSubject('');
         setMessage('');
         setIsSubmitting(false);
       })
       .catch((err) => {
-        alert(getApiErrorMessage(err));
+        toast.error(getApiErrorMessage(err));
         setIsSubmitting(false);
       });
   };

@@ -29,6 +29,7 @@ import { useAsyncData } from '../../hooks/useAsyncData';
 import { formatReportForList } from '../../utils/reportFormatters';
 import { getApiErrorMessage } from '../../services/api';
 import { KanbanColumnSkeleton } from '../../components/ui/Skeleton';
+import toast from 'react-hot-toast';
 
 // ─── UTILS & COMPONENTS ─────────────────────────────────────────────────────────
 
@@ -220,7 +221,7 @@ const AdminReports = () => {
           await updateReportStatus(active.id, overContainer);
         }
       } catch (err) {
-        console.error("Error actualizando reporte:", err);
+        toast.error('Error al actualizar reporte: ' + getApiErrorMessage(err));
       }
     }
     
@@ -240,7 +241,7 @@ const AdminReports = () => {
         return next;
       });
     } catch (err) {
-      alert(getApiErrorMessage(err));
+      toast.error(getApiErrorMessage(err));
     }
   };
 

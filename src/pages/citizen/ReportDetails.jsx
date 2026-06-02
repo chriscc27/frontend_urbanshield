@@ -14,6 +14,7 @@ import {
   getStatusLabel,
   PRIORITY_LABELS,
 } from '../../utils/reportFormatters';
+import toast from 'react-hot-toast';
 
 const ReportDetails = () => {
   const { id } = useParams();
@@ -58,7 +59,7 @@ const ReportDetails = () => {
       await deleteReport(report.id);
       navigate('/reports', { replace: true });
     } catch (err) {
-      alert(getApiErrorMessage(err));
+      toast.error(getApiErrorMessage(err));
     }
   };
 

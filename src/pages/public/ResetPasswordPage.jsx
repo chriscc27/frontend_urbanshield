@@ -8,8 +8,9 @@ import { getApiErrorMessage } from '../../services/api';
 const ResetPasswordPage = () => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
+  const emailFromUrl = params.get('email') || '';
   const tokenFromUrl = params.get('token') || '';
-  const [form, setForm] = React.useState({ token: tokenFromUrl, newPassword: '' });
+  const [form, setForm] = React.useState({ email: emailFromUrl, token: tokenFromUrl, newPassword: '' });
   const [loading, setLoading] = React.useState(false);
   const [message, setMessage] = React.useState('');
   const [error, setError] = React.useState('');
@@ -42,18 +43,28 @@ const ResetPasswordPage = () => {
           </div>
           <div>
             <h1 className="font-display text-xl font-bold text-text-primary">Restablecer contraseña</h1>
-            <p className="text-xs text-text-muted">Ingresa el token y la nueva contraseña.</p>
+            <p className="text-xs text-text-muted">Ingresa tu correo, el código que recibiste y la nueva contraseña.</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <label className="block text-sm font-semibold text-text-primary">Token</label>
+          <label className="block text-sm font-semibold text-text-primary">Correo electrónico</label>
+          <input
+            type="email"
+            value={form.email}
+            onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
+            required
+            className="w-full px-4 py-3 rounded-xl border border-border-light bg-white/50 outline-none focus:ring-2 focus:ring-primary/20"
+            placeholder="tu@email.com"
+          />
+
+          <label className="block text-sm font-semibold text-text-primary">Código de verificación</label>
           <input
             value={form.token}
             onChange={(e) => setForm((prev) => ({ ...prev, token: e.target.value }))}
             required
             className="w-full px-4 py-3 rounded-xl border border-border-light bg-white/50 outline-none focus:ring-2 focus:ring-primary/20"
-            placeholder="Token recibido por correo"
+            placeholder="Código recibido por correo (ej. 123456)"
           />
 
           <label className="block text-sm font-semibold text-text-primary">Nueva contraseña</label>

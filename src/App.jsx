@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import NotificationToast from './components/ui/NotificationToast';
@@ -19,7 +20,7 @@ function App() {
         }
       }
     } catch (e) {
-      console.error('Failed to parse settings on boot', e);
+      // Ignorado para evitar logs en consola
     }
   }, []);
 
@@ -29,6 +30,7 @@ function App() {
         <NotificationProvider>
           <AppRoutes />
           <NotificationToast />
+          <Toaster position="top-right" toastOptions={{ className: 'glass-premium rounded-xl text-sm font-semibold' }} />
         </NotificationProvider>
       </AuthProvider>
     </Router>

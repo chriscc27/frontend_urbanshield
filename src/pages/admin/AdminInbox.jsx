@@ -7,6 +7,7 @@ import Badge from '../../components/ui/Badge';
 import { useAsyncData } from '../../hooks/useAsyncData';
 import { closeSupportMessage, getSupportInbox, replySupportMessage } from '../../services/supportApi';
 import { getApiErrorMessage } from '../../services/api';
+import toast from 'react-hot-toast';
 
 const statusLabel = {
   open: { label: 'Abierto', variant: 'warning' },
@@ -42,7 +43,7 @@ const AdminInbox = () => {
       setResponse('');
       await refetch();
     } catch (err) {
-      alert(getApiErrorMessage(err));
+      toast.error(getApiErrorMessage(err));
     } finally {
       setSaving(false);
     }
@@ -55,7 +56,7 @@ const AdminInbox = () => {
       await closeSupportMessage(selected.supportMessageId);
       await refetch();
     } catch (err) {
-      alert(getApiErrorMessage(err));
+      toast.error(getApiErrorMessage(err));
     } finally {
       setSaving(false);
     }

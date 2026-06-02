@@ -9,6 +9,7 @@ import { getApiErrorMessage } from '../../services/api';
 import { usePolling } from '../../hooks/usePolling';
 import { useAsyncData } from '../../hooks/useAsyncData';
 import AwsLocationMap from '../../components/common/AwsLocationMap';
+import toast from 'react-hot-toast';
 
 const CATEGORY_MAP = {
   incendio: {
@@ -81,8 +82,7 @@ const CitizenMap = () => {
       await voteReport(reportId, type);
       setVotedMap(prev => ({ ...prev, [reportId]: type }));
     } catch (error) {
-      console.error(error);
-      alert(getApiErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
     } finally {
       setVoting(false);
     }

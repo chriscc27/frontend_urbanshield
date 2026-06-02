@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Shield, Mail, ArrowLeft } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import { forgotPassword } from '../../services/authApi';
@@ -10,6 +10,7 @@ const ForgotPasswordPage = () => {
   const [loading, setLoading] = React.useState(false);
   const [message, setMessage] = React.useState('');
   const [error, setError] = React.useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,6 +21,7 @@ const ForgotPasswordPage = () => {
       const cleanEmail = email.trim();
       const result = await forgotPassword(cleanEmail);
       setMessage(result?.message || 'Revisa tu correo para continuar.');
+      setTimeout(() => navigate(`/reset-password?email=${encodeURIComponent(cleanEmail)}`), 1500);
     } catch (err) {
       setError(getApiErrorMessage(err));
     } finally {
