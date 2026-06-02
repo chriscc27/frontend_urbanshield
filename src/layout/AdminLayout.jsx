@@ -9,7 +9,7 @@ const adminLinks = [
   { path: '/admin', label: 'Dashboard Analítico', icon: LayoutDashboard, exact: true },
   { path: '/admin/reports', label: 'Gestión de Reportes', icon: FileText, exact: false },
   { path: '/admin/history', label: 'Historial de Reportes', icon: FileText, exact: false },
-  { path: '/admin/map', label: 'Mapa de Monitoreo', icon: Map, exact: false },
+  { path: '/admin/map', label: 'Radar Ciudadano', icon: Map, exact: false },
   { path: '/admin/inbox', label: 'Bandeja de Soporte', icon: Inbox, exact: false },
   { path: '/admin/settings', label: 'Configuración', icon: Settings, exact: false },
 ];
@@ -18,7 +18,7 @@ const pageTitles = {
   '/admin': 'Dashboard Analítico',
   '/admin/reports': 'Gestión de Emergencias',
   '/admin/history': 'Historial de Reportes',
-  '/admin/map': 'Monitoreo en Tiempo Real',
+  '/admin/map': 'Radar Ciudadano',
   '/admin/inbox': 'Bandeja de Soporte',
   '/admin/settings': 'Configuración',
 };

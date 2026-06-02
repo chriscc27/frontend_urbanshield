@@ -154,12 +154,16 @@ const AwsLocationMap = ({
       if (point.longitude == null || point.latitude == null) return;
 
       const markerElement = document.createElement('div');
-      markerElement.style.width = '16px';
-      markerElement.style.height = '16px';
-      markerElement.style.borderRadius = '999px';
-      markerElement.style.border = '2px solid white';
-      markerElement.style.boxShadow = '0 4px 14px rgba(0, 0, 0, 0.22)';
-      markerElement.style.background = point.color || '#dc2626';
+      if (point.html) {
+        markerElement.innerHTML = point.html;
+      } else {
+        markerElement.style.width = '16px';
+        markerElement.style.height = '16px';
+        markerElement.style.borderRadius = '999px';
+        markerElement.style.border = '2px solid white';
+        markerElement.style.boxShadow = '0 4px 14px rgba(0, 0, 0, 0.22)';
+        markerElement.style.background = point.color || '#dc2626';
+      }
       
       if (onMarkerClick) {
         markerElement.style.cursor = 'pointer';
