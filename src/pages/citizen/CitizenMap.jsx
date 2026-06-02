@@ -71,7 +71,7 @@ const CitizenMap = () => {
         createdAt: m.createdAt || m.created_at || new Date().toISOString(),
         description: m.description || '',
       };
-    }).filter(m => 
+    }).filter(m =>
       m.lat != null && m.lng != null && m.status !== 'cancelled' && m.status !== 'resolved'
     );
   }, [data]);
@@ -119,7 +119,7 @@ const CitizenMap = () => {
         const isMatch = marker.category?.toLowerCase() === selectedCategory.toLowerCase();
         if (!isMatch) return false;
       }
-      
+
       // 2. Filtrar por estado / urgencia
       if (selectedStatus === 'critical') {
         if (marker.priority !== 'critical') return false;
@@ -128,7 +128,7 @@ const CitizenMap = () => {
       } else if (selectedStatus === 'pending') {
         if (marker.status === 'verified') return false;
       }
-      
+
       return true;
     });
   }, [markers, selectedCategory, selectedStatus]);
@@ -136,7 +136,7 @@ const CitizenMap = () => {
   const markerPoints = useMemo(() => filteredMarkers.map((marker) => {
     const categoryKey = marker.category?.toLowerCase() || 'otros';
     const catConfig = CATEGORY_MAP[categoryKey] || CATEGORY_MAP['otros'];
-    
+
     // Generar el HTML para el marcador
     const markerHtml = `
       <div style="position: relative; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;">
@@ -169,7 +169,7 @@ const CitizenMap = () => {
 
   return (
     <div className="relative h-full min-h-[calc(100vh-8rem)] w-full overflow-hidden bg-primary-bg rounded-3xl border border-border-light shadow-sm">
-      
+
       {/* Header Overlay */}
       <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-start pointer-events-none">
         {/* Left card: visible on desktop, hidden on mobile */}
@@ -181,7 +181,7 @@ const CitizenMap = () => {
             Radar de la Comunidad
           </h3>
           <p className="text-xs text-text-secondary">Valida reportes para ayudar a la comunidad y gana puntos de confianza.</p>
-          
+
           {/* Incident Categories Legend */}
           <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 border-t border-border/40 pt-2.5 text-xs text-text-muted">
             <div className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded bg-[#f97316]"></span> Incendio</div>
@@ -191,7 +191,7 @@ const CitizenMap = () => {
             <div className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded bg-[#f59e0b]"></span> Bloqueo Vial</div>
             <div className="flex items-center gap-1.5"><span className="h-2.5 w-2.5 rounded bg-[#4c9f70]"></span> Otro</div>
           </div>
-          
+
           {/* States Legend */}
           <div className="mt-2.5 flex items-center gap-3 text-xs text-text-muted border-t border-border/40 pt-2">
             <div className="flex items-center gap-1.5">
@@ -203,7 +203,7 @@ const CitizenMap = () => {
             </div>
             <div className="flex items-center gap-1.5">
               <span className="h-4 w-4 rounded-full bg-[#10b981] border border-white flex items-center justify-center text-white scale-90">
-                <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
               </span>
               Verificado vecinal
             </div>
@@ -216,7 +216,7 @@ const CitizenMap = () => {
                 <SlidersHorizontal className="h-3 w-3 text-primary" /> Filtros Activos
               </span>
               {(selectedCategory !== 'all' || selectedStatus !== 'all') && (
-                <button 
+                <button
                   onClick={() => {
                     setSelectedCategory('all');
                     setSelectedStatus('all');
@@ -227,10 +227,10 @@ const CitizenMap = () => {
                 </button>
               )}
             </div>
-            
+
             <div className="grid grid-cols-2 gap-2">
-              <select 
-                value={selectedCategory} 
+              <select
+                value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="text-[11px] font-semibold bg-secondary-bg/60 border border-border-light rounded-xl px-2.5 py-1.5 text-text-primary outline-none focus:border-primary transition-colors cursor-pointer w-full"
               >
@@ -242,9 +242,9 @@ const CitizenMap = () => {
                 <option value="bloqueo">Bloqueo Vial</option>
                 <option value="otros">Otros</option>
               </select>
-              
-              <select 
-                value={selectedStatus} 
+
+              <select
+                value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
                 className="text-[11px] font-semibold bg-secondary-bg/60 border border-border-light rounded-xl px-2.5 py-1.5 text-text-primary outline-none focus:border-primary transition-colors cursor-pointer w-full"
               >
@@ -259,8 +259,8 @@ const CitizenMap = () => {
 
         {/* Mobile floating button */}
         <div className="md:hidden flex gap-2 pointer-events-auto">
-          <Button 
-            variant="secondary" 
+          <Button
+            variant="secondary"
             className="shadow-md bg-[color-mix(in_srgb,var(--color-card-bg)_90%,transparent)] backdrop-blur-sm font-bold text-xs flex items-center gap-1.5 rounded-full py-2.5 px-4 border border-border-light/80"
             onClick={() => setShowMobileFilters(true)}
           >
@@ -273,9 +273,9 @@ const CitizenMap = () => {
         </div>
 
         <div className="flex flex-col gap-2 pointer-events-auto">
-          <Button 
-            variant="secondary" 
-            size="icon" 
+          <Button
+            variant="secondary"
+            size="icon"
             className="shadow-md bg-[color-mix(in_srgb,var(--color-card-bg)_90%,transparent)] backdrop-blur-sm"
             onClick={() => setCenterOnUser(true)}
           >
@@ -323,12 +323,12 @@ const CitizenMap = () => {
                     className="bg-[color-mix(in_srgb,var(--color-card-bg)_95%,transparent)] backdrop-blur-md rounded-2xl p-3 border border-white/40 shadow-lg cursor-pointer flex gap-3 hover:shadow-xl transition-all"
                   >
                     {/* Incident Icon */}
-                    <div 
+                    <div
                       className="w-9 h-9 rounded-xl flex items-center justify-center text-white flex-shrink-0"
                       style={{ backgroundColor: catConfig.color }}
                       dangerouslySetInnerHTML={{ __html: catConfig.iconSvg }}
                     />
-                    
+
                     {/* Content */}
                     <div className="min-w-0 flex-1">
                       <div className="flex justify-between items-start gap-1">
@@ -355,7 +355,7 @@ const CitizenMap = () => {
       </div>
 
       {/* Map */}
-      <AwsLocationMap 
+      <AwsLocationMap
         centerOnUserLocation={centerOnUser}
         className="absolute inset-0"
         center={mapCenter}
@@ -375,18 +375,18 @@ const CitizenMap = () => {
       {/* Popup Validation UI */}
       <AnimatePresence>
         {selectedReport && !showDetails && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 w-full max-w-sm px-4 pointer-events-auto"
           >
             <div className="bg-[color-mix(in_srgb,var(--color-card-bg)_95%,transparent)] backdrop-blur-xl rounded-3xl shadow-[0_0_40px_rgba(0,0,0,0.15)] border-0 p-5">
-              <ReportPopupContent 
-                reportId={selectedReport.id} 
-                onClose={() => setSelectedReport(null)} 
-                votedMap={votedMap} 
-                onVote={handleVote} 
+              <ReportPopupContent
+                reportId={selectedReport.id}
+                onClose={() => setSelectedReport(null)}
+                votedMap={votedMap}
+                onVote={handleVote}
                 voting={voting}
                 onShowDetails={() => setShowDetails(true)}
               />
@@ -398,8 +398,8 @@ const CitizenMap = () => {
       {/* Full Details Modal */}
       <AnimatePresence>
         {showDetails && selectedReport && (
-          <ReportDetailsModal 
-            reportId={selectedReport.id} 
+          <ReportDetailsModal
+            reportId={selectedReport.id}
             onClose={() => setShowDetails(false)}
             votedMap={votedMap}
             onVote={handleVote}
@@ -413,7 +413,7 @@ const CitizenMap = () => {
         {showMobileFilters && (
           <>
             {/* Backdrop */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -421,7 +421,7 @@ const CitizenMap = () => {
               onClick={() => setShowMobileFilters(false)}
             />
             {/* Panel */}
-            <motion.div 
+            <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
@@ -433,7 +433,7 @@ const CitizenMap = () => {
                   <SlidersHorizontal className="h-5 w-5 text-primary" />
                   Filtros y Leyenda
                 </h3>
-                <button 
+                <button
                   onClick={() => setShowMobileFilters(false)}
                   className="h-8 w-8 rounded-full bg-secondary-bg flex items-center justify-center font-bold text-text-secondary hover:bg-border transition-colors"
                 >
@@ -452,7 +452,7 @@ const CitizenMap = () => {
                   <div className="flex items-center gap-2"><span className="h-3 w-3 rounded bg-[#f59e0b]"></span> Bloqueo Vial</div>
                   <div className="flex items-center gap-2"><span className="h-3 w-3 rounded bg-[#4c9f70]"></span> Otro</div>
                 </div>
-                
+
                 <h4 className="text-xs font-bold text-text-primary uppercase tracking-wider mt-4 mb-2.5">Estados</h4>
                 <div className="flex flex-col gap-2 text-xs text-text-secondary">
                   <div className="flex items-center gap-2">
@@ -464,7 +464,7 @@ const CitizenMap = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="h-4.5 w-4.5 rounded-full bg-[#10b981] flex items-center justify-center text-white scale-90 border border-white" style={{ width: '18px', height: '18px' }}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                     </span>
                     Verificado por la comunidad
                   </div>
@@ -475,8 +475,8 @@ const CitizenMap = () => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-text-muted">Filtrar por Categoría</label>
-                  <select 
-                    value={selectedCategory} 
+                  <select
+                    value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
                     className="w-full text-sm font-semibold bg-secondary-bg border border-border rounded-xl px-3 py-3 text-text-primary outline-none focus:border-primary transition-colors"
                   >
@@ -492,8 +492,8 @@ const CitizenMap = () => {
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-wider text-text-muted">Filtrar por Estado / Urgencia</label>
-                  <select 
-                    value={selectedStatus} 
+                  <select
+                    value={selectedStatus}
                     onChange={(e) => setSelectedStatus(e.target.value)}
                     className="w-full text-sm font-semibold bg-secondary-bg border border-border rounded-xl px-3 py-3 text-text-primary outline-none focus:border-primary transition-colors"
                   >
@@ -506,9 +506,9 @@ const CitizenMap = () => {
 
                 {/* Reset button if active */}
                 {(selectedCategory !== 'all' || selectedStatus !== 'all') && (
-                  <Button 
-                    variant="danger" 
-                    className="w-full rounded-xl py-3 font-bold mt-2" 
+                  <Button
+                    variant="danger"
+                    className="w-full rounded-xl py-3 font-bold mt-2"
                     onClick={() => {
                       setSelectedCategory('all');
                       setSelectedStatus('all');
@@ -518,10 +518,10 @@ const CitizenMap = () => {
                     Limpiar Filtros
                   </Button>
                 )}
-                
-                <Button 
-                  variant="primary" 
-                  className="w-full rounded-xl py-3 font-bold mt-2 animate-pulse" 
+
+                <Button
+                  variant="primary"
+                  className="w-full rounded-xl py-3 font-bold mt-2 animate-pulse"
                   onClick={() => setShowMobileFilters(false)}
                 >
                   Aplicar Filtros
@@ -561,9 +561,9 @@ const ReportPopupContent = ({ reportId, onClose, votedMap, onVote, voting, onSho
             )}
           </div>
           <h4 className="font-bold text-text-primary text-lg leading-tight">{report.title}</h4>
-          <p className="text-xs text-text-muted font-mono mt-1">ID: {report.reportId.slice(0,8)}</p>
+          <p className="text-xs text-text-muted font-mono mt-1">ID: {report.reportId.slice(0, 8)}</p>
         </div>
-        <button 
+        <button
           onClick={onClose}
           className="h-8 w-8 rounded-full bg-secondary-bg flex items-center justify-center hover:bg-border transition-colors text-text-secondary flex-shrink-0"
         >
@@ -573,7 +573,7 @@ const ReportPopupContent = ({ reportId, onClose, votedMap, onVote, voting, onSho
 
       <div className="bg-secondary-bg/50 p-3 rounded-xl mb-4 border border-border-light text-sm">
         <p className="text-text-primary mb-2 line-clamp-3">{report.description || 'Sin descripción'}</p>
-        
+
         <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border-light">
           <div className="h-6 w-6 bg-primary/20 rounded-full flex items-center justify-center text-[10px] font-bold text-primary flex-shrink-0 overflow-hidden">
             {report.reporterAvatarUrl ? (
@@ -602,16 +602,16 @@ const ReportPopupContent = ({ reportId, onClose, votedMap, onVote, voting, onSho
         <div className="space-y-3">
           <p className="text-sm text-text-secondary">¿Sigues viendo este incidente en esta ubicación?</p>
           <div className="grid grid-cols-2 gap-3">
-            <Button 
-              variant="success" 
+            <Button
+              variant="success"
               isLoading={voting}
               onClick={() => onVote(report.reportId, 'upvote')}
               leftIcon={<ThumbsUp className="h-4 w-4" />}
             >
               Sí, está ahí
             </Button>
-            <Button 
-              variant="danger" 
+            <Button
+              variant="danger"
               isLoading={voting}
               onClick={() => onVote(report.reportId, 'downvote')}
               leftIcon={<ThumbsDown className="h-4 w-4" />}
@@ -665,7 +665,7 @@ const ReportDetailsModal = ({ reportId, onClose, votedMap, onVote, voting }) => 
 
   const getHeaderGradient = () => {
     if (report.priority === 'critical') return 'from-red-600 via-red-500 to-rose-600';
-    
+
     const cat = (report.category || '').toLowerCase();
     if (cat.includes('incendio')) {
       return 'from-orange-600 via-orange-500 to-red-500';
@@ -682,7 +682,7 @@ const ReportDetailsModal = ({ reportId, onClose, votedMap, onVote, voting }) => 
     if (cat.includes('bloqueo') || cat.includes('vial') || cat.includes('tránsito')) {
       return 'from-amber-600 via-amber-500 to-yellow-500';
     }
-    
+
     return 'from-emerald-600 via-emerald-500 to-teal-600';
   };
 
@@ -691,16 +691,16 @@ const ReportDetailsModal = ({ reportId, onClose, votedMap, onVote, voting }) => 
 
   return (
     <>
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-6 bg-black/60 backdrop-blur-md"
         onClick={onClose}
       >
-        <motion.div 
-          initial={{ y: 50, scale: 0.95 }} 
-          animate={{ y: 0, scale: 1 }} 
+        <motion.div
+          initial={{ y: 50, scale: 0.95 }}
+          animate={{ y: 0, scale: 1 }}
           exit={{ y: 20, scale: 0.95 }}
           onClick={e => e.stopPropagation()}
           className="w-full h-full sm:h-auto sm:max-w-2xl sm:max-h-[90vh] bg-card-bg sm:rounded-[2rem] shadow-2xl overflow-hidden flex flex-col border-0 outline-none ring-0"
@@ -708,7 +708,7 @@ const ReportDetailsModal = ({ reportId, onClose, votedMap, onVote, voting }) => 
           {/* Header Dinámico (Sin Imagen) */}
           <div className={`relative pt-12 sm:pt-8 pb-6 px-6 sm:px-8 w-full bg-gradient-to-br ${headerGradient} flex-shrink-0 overflow-hidden`}>
             <div className="absolute top-[-50%] right-[-10%] w-[80%] h-[150%] bg-white/10 rounded-full blur-3xl mix-blend-overlay" />
-            <button 
+            <button
               onClick={onClose}
               className="absolute top-4 right-4 z-20 h-10 w-10 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center hover:bg-black/40 transition-colors text-white border border-white/20 shadow-lg"
             >
@@ -717,11 +717,10 @@ const ReportDetailsModal = ({ reportId, onClose, votedMap, onVote, voting }) => 
             <div className="relative z-20 flex justify-between items-end">
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <Badge 
-                    variant={isVerified ? 'success' : report.priority === 'critical' ? 'danger' : 'warning'} 
-                    className={`shadow-sm border-white/20 backdrop-blur-md text-white ${
-                      isVerified ? 'bg-success/30 border-success/30' : 'bg-white/20'
-                    }`}
+                  <Badge
+                    variant={isVerified ? 'success' : report.priority === 'critical' ? 'danger' : 'warning'}
+                    className={`shadow-sm border-white/20 backdrop-blur-md text-white ${isVerified ? 'bg-success/30 border-success/30' : 'bg-white/20'
+                      }`}
                   >
                     {isVerified ? '✓ Verificado por la comunidad' : 'Requiere Validación'}
                   </Badge>
@@ -740,7 +739,7 @@ const ReportDetailsModal = ({ reportId, onClose, votedMap, onVote, voting }) => 
 
           {/* Content Body (Scrollable) */}
           <div className="flex-1 overflow-y-auto p-5 sm:p-8 space-y-7 custom-scrollbar bg-card-bg">
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex items-center gap-4 p-4 rounded-2xl bg-secondary-bg/50 border border-border-light shadow-sm hover:shadow-md transition-shadow">
                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 text-primary">
@@ -769,22 +768,22 @@ const ReportDetailsModal = ({ reportId, onClose, votedMap, onVote, voting }) => 
                   <ImageIcon className="h-4 w-4 text-primary" /> Evidencia Fotográfica
                 </h3>
                 <div className="relative w-full h-48 sm:h-72 rounded-2xl overflow-hidden bg-black group border border-border-light shadow-inner">
-                  <img 
-                    src={images[currentImageIndex]} 
-                    alt={`Evidencia ${currentImageIndex + 1}`} 
+                  <img
+                    src={images[currentImageIndex]}
+                    alt={`Evidencia ${currentImageIndex + 1}`}
                     className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
                     onClick={() => setExpandedImage(images[currentImageIndex])}
                   />
-                  
+
                   {images.length > 1 && (
                     <>
-                      <button 
+                      <button
                         onClick={prevImage}
                         className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/80 transition-colors shadow-lg opacity-0 group-hover:opacity-100"
                       >
                         <ChevronLeft className="h-6 w-6" />
                       </button>
-                      <button 
+                      <button
                         onClick={nextImage}
                         className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/80 transition-colors shadow-lg opacity-0 group-hover:opacity-100"
                       >
@@ -792,16 +791,16 @@ const ReportDetailsModal = ({ reportId, onClose, votedMap, onVote, voting }) => 
                       </button>
                       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-black/50 backdrop-blur-md px-3 py-1.5 rounded-full">
                         {images.map((_, idx) => (
-                          <div 
-                            key={idx} 
-                            className={`h-1.5 rounded-full transition-all ${idx === currentImageIndex ? 'w-5 bg-white' : 'w-1.5 bg-white/50'}`} 
+                          <div
+                            key={idx}
+                            className={`h-1.5 rounded-full transition-all ${idx === currentImageIndex ? 'w-5 bg-white' : 'w-1.5 bg-white/50'}`}
                           />
                         ))}
                       </div>
                     </>
                   )}
-                  
-                  <button 
+
+                  <button
                     onClick={() => setExpandedImage(images[currentImageIndex])}
                     className="absolute top-3 right-3 h-10 w-10 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity"
                   >
@@ -878,8 +877,8 @@ const ReportDetailsModal = ({ reportId, onClose, votedMap, onVote, voting }) => 
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <Button 
-                  variant="success" 
+                <Button
+                  variant="success"
                   className="flex-1 py-4 text-sm font-bold shadow-lg shadow-success/20 hover:-translate-y-0.5 transition-transform"
                   isLoading={voting}
                   onClick={() => onVote(report.reportId, 'upvote')}
@@ -887,8 +886,8 @@ const ReportDetailsModal = ({ reportId, onClose, votedMap, onVote, voting }) => 
                 >
                   Confirmar (Sí está ahí)
                 </Button>
-                <Button 
-                  variant="danger" 
+                <Button
+                  variant="danger"
                   className="flex-1 py-4 text-sm font-bold shadow-lg shadow-danger/20 hover:-translate-y-0.5 transition-transform"
                   isLoading={voting}
                   onClick={() => onVote(report.reportId, 'downvote')}
@@ -905,22 +904,22 @@ const ReportDetailsModal = ({ reportId, onClose, votedMap, onVote, voting }) => 
       {/* Lightbox Modal for Expanded Image */}
       <AnimatePresence>
         {expandedImage && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[70] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 sm:p-8"
             onClick={() => setExpandedImage(null)}
           >
-            <button 
+            <button
               className="absolute top-6 right-6 z-[80] h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors border border-white/20"
               onClick={() => setExpandedImage(null)}
             >
               ✕
             </button>
-            <img 
-              src={expandedImage} 
-              alt="Evidencia Ampliada" 
+            <img
+              src={expandedImage}
+              alt="Evidencia Ampliada"
               className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />

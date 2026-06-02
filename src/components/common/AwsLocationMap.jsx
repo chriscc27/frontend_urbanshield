@@ -29,6 +29,7 @@ const AwsLocationMap = ({
   centerOnUserLocation = true,
   userLocationZoom = 14,
   showUserLocationMarker = true,
+  flyToOnCenterChange = true,
   onMapClick,
   onMarkerClick,
 }) => {
@@ -84,6 +85,9 @@ const AwsLocationMap = ({
 
     map.on('load', () => {
       map.resize();
+      setTimeout(() => mapRef.current && mapRef.current.resize(), 100);
+      setTimeout(() => mapRef.current && mapRef.current.resize(), 500);
+      
       if (typeof onMapReady === 'function') onMapReady(map);
 
       if (centerOnUserLocation && showUserLocationMarker) {
@@ -119,10 +123,17 @@ const AwsLocationMap = ({
       }
     };
 
+    const resizeObserver = new ResizeObserver(() => {
+      setTimeout(resize, 10);
+    });
+    resizeObserver.observe(mapContainerRef.current);
+    
+    // Fallback on window resize too
     window.addEventListener('resize', resize);
     mapRef.current = map;
 
     return () => {
+      resizeObserver.disconnect();
       window.removeEventListener('resize', resize);
       markerRefs.current.forEach((marker) => marker.remove());
       markerRefs.current = [];
@@ -137,11 +148,11 @@ const AwsLocationMap = ({
 
   // Efecto para actualizar el centro sin recrear el mapa
   useEffect(() => {
-    if (mapRef.current && center && center.length === 2) {
+    if (mapRef.current && center && center.length === 2 && flyToOnCenterChange) {
       mapRef.current.flyTo({ center, zoom, duration: 800 });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [center?.[0], center?.[1], zoom]);
+  }, [center?.[0], center?.[1], zoom, flyToOnCenterChange]);
 
   useEffect(() => {
     const map = mapRef.current;

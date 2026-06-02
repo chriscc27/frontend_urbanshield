@@ -408,7 +408,8 @@ const CreateReport = () => {
                         longitude: Number(form.longitude),
                         color: '#dc2626',
                       }]}
-                      centerOnUserLocation={true}
+                      centerOnUserLocation={false}
+                      flyToOnCenterChange={false}
                       onMapClick={(loc) => setForm((prev) => ({ ...prev, latitude: loc.latitude, longitude: loc.longitude }))}
                     />
                     <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20">

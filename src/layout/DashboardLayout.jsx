@@ -45,7 +45,7 @@ const DashboardLayout = () => {
       <div className="flex-1 flex flex-col lg:pl-64 min-w-0 transition-all duration-300">
         <TopHeader onMenuClick={() => setIsSidebarOpen(true)} title={getTitle()} />
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 relative">
+        <main className={`flex-1 relative ${location.pathname === '/radar' ? 'overflow-hidden p-0' : 'overflow-y-auto p-4 sm:p-6 lg:p-8 pb-24'}`}>
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
@@ -53,7 +53,7 @@ const DashboardLayout = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="h-full"
+              className="min-h-full"
             >
               <Outlet />
             </motion.div>

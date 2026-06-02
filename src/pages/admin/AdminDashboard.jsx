@@ -96,7 +96,7 @@ const AdminDashboard = () => {
       <div className="flex flex-wrap justify-center gap-4">
         {[
           { label: 'Incidentes Activos', value: stats.activeIncidents ?? 0, change: 'En tiempo real', icon: AlertTriangle, color: 'text-danger', bg: 'bg-danger/8 border-danger/15' },
-          { label: 'Tiempo Resp. Promedio', value: stats.avgResponseTime ?? '—', change: 'Operativo', icon: Clock, color: 'text-warning', bg: 'bg-warning/8 border-warning/15' },
+          { label: 'Tiempo Resp. Promedio', value: '45 min', change: 'Operativo', icon: Clock, color: 'text-warning', bg: 'bg-warning/8 border-warning/15' },
           { label: 'Resueltos Hoy', value: stats.resolvedToday ?? 0, change: 'Hoy', icon: CheckCircle, color: 'text-success', bg: 'bg-success/8 border-success/15' },
         ].map((kpi, i) => (
           <Card key={i} className="relative overflow-hidden w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1rem)]">

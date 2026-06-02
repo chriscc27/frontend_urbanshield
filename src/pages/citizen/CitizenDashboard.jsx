@@ -98,29 +98,31 @@ const CitizenDashboard = () => {
   }), [allReports]);
 
   // Map markers from nearby reports (all users)
-  const mapMarkers = nearbyReports
-    .filter((report) => (report.latitude != null || report.lat != null) && (report.longitude != null || report.lng != null))
-    .map((report) => {
-      const lat = report.lat ?? report.latitude;
-      const lng = report.lng ?? report.longitude;
-      const status = report.status || 'pending';
-      return {
-        latitude: lat,
-        longitude: lng,
-        color: status === 'verified' ? '#16a34a' : status === 'resolved' ? '#8b5cf6' : report.priority === 'critical' ? '#dc2626' : '#f59e0b',
-        popupHtml: `<strong>${report.title || report.category}</strong><br/>${report.category}`,
-      };
-    });
+  const mapMarkers = useMemo(() => {
+    return nearbyReports
+      .filter((report) => (report.latitude != null || report.lat != null) && (report.longitude != null || report.lng != null))
+      .map((report) => {
+        const lat = report.lat ?? report.latitude;
+        const lng = report.lng ?? report.longitude;
+        const status = report.status || 'pending';
+        return {
+          latitude: lat,
+          longitude: lng,
+          color: status === 'verified' ? '#16a34a' : status === 'resolved' ? '#8b5cf6' : report.priority === 'critical' ? '#dc2626' : '#f59e0b',
+          popupHtml: `<strong>${report.title || report.category}</strong><br/>${report.category}`,
+        };
+      });
+  }, [JSON.stringify(nearbyReports)]);
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6 max-w-7xl mx-auto mb-16">  {/* ← Mayor margen inferior para evitar que se pegue al borde */}
       <OnboardingTour
         steps={[
           { targetId: 'tour-trust', title: 'Tu Reputación', content: 'Aquí verás tu Nivel de Confianza y puntos. ¡Ganas puntos al reportar incidentes verídicos y validar los de otros!' },
           { targetId: 'tour-map', title: 'Radar Ciudadano', content: 'En este mapa verás los incidentes confirmados cerca de ti en tiempo real.' },
           { targetId: 'tour-report', title: 'Crear Reportes', content: 'Si ves una emergencia, presiona aquí. Tu reporte alertará inmediatamente a la comunidad y autoridades.' }
         ]}
-        onComplete={() => {}}
+        onComplete={() => { }}
       />
       {error && <p className="text-sm text-danger bg-danger/10 border border-danger/20 rounded-xl px-3 py-2">{error}</p>}
 
@@ -195,7 +197,7 @@ const CitizenDashboard = () => {
                 </span>
               </div>
             </CardHeader>
-            <div className="relative flex-1 min-h-[400px] overflow-hidden map-placeholder rounded-b-[1.25rem] border-t border-border shadow-inner">
+            <div className="relative flex-1 min-h-[400px] overflow-hidden rounded-b-[1.25rem] border-t border-border shadow-inner">
               <div className="absolute inset-0 z-0">
                 <AwsLocationMap
                   className="absolute inset-0"
@@ -213,7 +215,7 @@ const CitizenDashboard = () => {
         <div className="xl:col-span-1 flex flex-col gap-6">
           <Card className="flex-1">
             <CardHeader><CardTitle>Tus Reportes Recientes</CardTitle></CardHeader>
-            <CardContent className="space-y-2 p-4">
+            <CardContent className="space-y-2 p-4 min-h-[250px]">
               {loading && (
                 <>
                   <ReportListItemSkeleton />
@@ -320,4 +322,3 @@ const CitizenDashboard = () => {
 };
 
 export default CitizenDashboard;
-
