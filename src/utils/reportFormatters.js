@@ -1,10 +1,10 @@
 export const CATEGORY_META = {
   incendio: { label: 'Incendio', emoji: '🔥' },
   inundacion: { label: 'Inundación', emoji: '🌊' },
-  delito: { label: 'Delito', emoji: '🚨' },
-  accidente: { label: 'Accidente', emoji: '🚗' },
-  bloqueo: { label: 'Bloqueo vial', emoji: '🚧' },
-  infraestructura: { label: 'Infraestructura', emoji: '🏗️' },
+  delito: { label: 'Delito / Robo', emoji: '🚨' },
+  accidente: { label: 'Accidente de Tránsito', emoji: '🚗' },
+  bloqueo: { label: 'Bloqueo Vial', emoji: '🚧' },
+  otros: { label: 'Otros', emoji: '📍' },
 };
 
 export const STATUS_LABELS = {

@@ -25,5 +25,5 @@ export const INCIDENT_CATEGORIES = [
   { value: 'delito', label: 'Delito / Robo', icon: '🚨', color: '#9B59B6' },
   { value: 'accidente', label: 'Accidente de Tránsito', icon: '🚗', color: '#D4A373' },
   { value: 'bloqueo', label: 'Bloqueo Vial', icon: '🚧', color: '#D9932A' },
-  { value: 'infraestructura', label: 'Infraestructura Urbana', icon: '🏗️', color: '#588157' },
+  { value: 'otros', label: 'Otros', icon: '📍', color: '#588157' },
 ];
