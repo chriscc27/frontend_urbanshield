@@ -80,11 +80,11 @@ const TiltCard = ({ children, className }) => {
 // --- STAGGER VARIANTS ---
 const staggerContainer = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.15 } }
+  show: { opacity: 1, transition: { staggerChildren: 0.08 } }
 };
 const staggerItem = {
   hidden: { opacity: 0, y: 30 },
-  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 200, damping: 20 } }
+  show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 25 } }
 };
 
 // --- MAIN PAGE ---
@@ -136,7 +136,7 @@ const LandingPage = () => {
         <FloatingBubble title="Emergencia Médica" reporter="Jean Marco" icon={Plus} delay={1.4} x="right-[22%]" y="top-[5%]" type="success" duration={11} />
 
         <div className="relative z-10 max-w-4xl mx-auto">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: "easeOut" }}>
             <h1 className="text-5xl md:text-7xl lg:text-[6rem] font-bold font-display text-text-primary tracking-tighter leading-[1.05] mb-8">
               La ciudad,<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#2F5D50] via-[#4C9F70] to-[#D6A663]">
@@ -367,37 +367,44 @@ const LandingPage = () => {
 
       {/* ── 7. INTEGRATIONS / CONNECTIONS WALL ─────────────────────────────── */}
       <section className="py-24 relative overflow-hidden text-center z-10">
-        <h2 className="text-2xl md:text-3xl font-bold font-display text-text-primary mb-12 tracking-tight">
+        <h2 className="text-3xl md:text-4xl font-bold font-display text-text-primary mb-12 tracking-tight">
           Halo conecta a la ciudad con:
         </h2>
         
         <motion.div 
           variants={staggerContainer} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-50px" }}
-          className="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"
+          className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6"
         >
           {[
-            { name: 'Policía Nacional', icon: Shield },
-            { name: 'Bomberos', icon: Flame },
-            { name: 'Ambulancias', icon: Activity },
-            { name: 'Juntas Vecinales', icon: Users },
-            { name: 'Tránsito', icon: Car },
-            { name: 'Alcaldías', icon: Building },
-            { name: 'Defensa Civil', icon: ShieldAlert },
-            { name: 'Centros Médicos', icon: Plus },
-            { name: 'Radio Patrullas', icon: Radio },
-            { name: 'Obras Públicas', icon: Construction },
+            { name: 'Policia Nacional', icon: Shield, desc: 'Despacho directo ante reportes de delitos y emergencias de seguridad.' },
+            { name: 'Bomberos', icon: Flame, desc: 'Coordinacion inmediata para combatir incendios y rescates.' },
+            { name: 'Ambulancias', icon: Activity, desc: 'Envio urgente para emergencias medicas y traslados criticos.' },
+            { name: 'Juntas Vecinales', icon: Users, desc: 'Validacion barrial activa de incidentes para evitar falsas alarmas.' },
+            { name: 'Transito', icon: Car, desc: 'Gestion y alertas de congestion vehicular o colisiones.' },
+            { name: 'Alcaldias', icon: Building, desc: 'Canalizacion directa para fallas de luminarias, baches y obras.' },
+            { name: 'Defensa Civil', icon: ShieldAlert, desc: 'Respuesta ante desastres naturales e inundaciones climaticas.' },
+            { name: 'Centros Medicos', icon: Plus, desc: 'Comunicacion con centros de salud y disponibilidad de camillas.' },
+            { name: 'Radio Patrullas', icon: Radio, desc: 'Seguimiento satelital y radiocomunicaciones de patrullas moviles.' },
+            { name: 'Obras Publicas', icon: Construction, desc: 'Reparacion de semaforos y daños en la infraestructura vial.' },
           ].map((entity, idx) => (
             <motion.div 
               key={idx}
               variants={staggerItem}
-              whileHover={{ y: -8, scale: 1.05, borderColor: '#4C9F70', backgroundColor: 'rgba(255,255,255,0.9)' }}
+              whileHover={{ y: -6, scale: 1.02, borderColor: '#4C9F70', backgroundColor: 'rgba(255,255,255,0.95)' }}
               transition={{ type: "spring", stiffness: 400 }}
-              className="glass-premium rounded-[1.5rem] p-6 flex flex-col items-center justify-center gap-3 group cursor-pointer"
+              className="glass-premium rounded-[1.5rem] p-6 flex flex-col items-center text-center gap-4 group cursor-pointer border border-white/40 shadow-sm"
             >
-              <entity.icon className="w-8 h-8 text-text-muted group-hover:text-primary group-hover:rotate-12 transition-all duration-300" />
-              <span className="text-xs font-bold text-text-secondary group-hover:text-primary transition-colors">
-                {entity.name}
-              </span>
+              <div className="w-12 h-12 rounded-xl bg-primary/5 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                <entity.icon className="w-6 h-6 transition-transform group-hover:rotate-12 duration-300" />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors mb-2 font-display">
+                  {entity.name}
+                </h3>
+                <p className="text-xs text-text-secondary leading-relaxed font-medium">
+                  {entity.desc}
+                </p>
+              </div>
             </motion.div>
           ))}
         </motion.div>

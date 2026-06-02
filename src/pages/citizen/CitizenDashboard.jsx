@@ -88,7 +88,7 @@ const CitizenDashboard = () => {
   const nearbyReports = Array.isArray(nearbyData) ? nearbyData : nearbyData?.markers || [];
   
   // Filtrar los recientes de la ciudad, ordenados por los mas recientes
-  const cityActivity = [...nearbyReports].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+  const cityActivity = [...nearbyReports].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 15);
 
   const stats = useMemo(() => ({
     total: allReports.length,
@@ -180,8 +180,8 @@ const CitizenDashboard = () => {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Map Widget */}
         <div className="xl:col-span-2" id="tour-map">
-          <Card className="h-full">
-            <CardHeader>
+          <Card className="h-full flex flex-col">
+            <CardHeader className="flex-shrink-0">
               <div className="flex justify-between items-center">
                 <CardTitle>Mapa de Incidentes en tu Zona</CardTitle>
                 <span className="flex items-center gap-2 text-xs text-danger font-medium">
@@ -195,7 +195,7 @@ const CitizenDashboard = () => {
                 </span>
               </div>
             </CardHeader>
-            <div className="relative min-h-[380px] overflow-hidden map-placeholder">
+            <div className="relative flex-1 min-h-[400px] overflow-hidden map-placeholder rounded-b-[1.25rem] border-t border-border shadow-inner">
               <div className="absolute inset-0 z-0">
                 <AwsLocationMap
                   className="absolute inset-0"
@@ -259,48 +259,57 @@ const CitizenDashboard = () => {
                 Actividad en la Ciudad
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-0">
-              {cityActivity.length === 0 ? (
-                <p className="px-5 py-4 text-sm text-text-muted">Sin actividad reciente.</p>
-              ) : (
-                cityActivity.map((act, i) => {
-                  const upvotes = act.upvotesCount || 0;
-                  const downvotes = act.downvotesCount || 0;
-                  const dist = getDistance(userLoc?.lat, userLoc?.lng, act.latitude || act.lat, act.longitude || act.lng);
-                  return (
-                  <div
-                    key={act.id}
-                    className={`px-5 py-3 flex items-start gap-3 ${i < cityActivity.length - 1 ? 'border-b border-border-light' : ''} hover:bg-muted/50 transition-colors`}
-                  >
-                    <div className={`h-2 w-2 mt-1.5 rounded-full flex-shrink-0 ${act.priority === 'critical' ? 'bg-danger' : act.status === 'verified' ? 'bg-success' : 'bg-warning'}`} />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start gap-2 mb-0.5">
-                        <p className="text-sm font-semibold text-text-primary truncate">{act.title || act.category}</p>
-                        <Badge variant={act.priority === 'critical' ? 'danger' : 'warning'} className="text-[10px] py-0 px-1.5 h-4 flex-shrink-0">
-                          {act.status === 'verified' ? 'Verificado' : 'Pendiente'}
-                        </Badge>
-                      </div>
-                      
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
-                        <p className="text-xs text-text-muted flex items-center gap-1 font-medium">
-                          <Clock className="h-3 w-3" /> {getRelativeTime(act.createdAt)}
-                        </p>
-                        {dist && (
-                          <p className="text-xs text-text-muted flex items-center gap-1">
-                            <MapPin className="h-3 w-3" /> a {dist} km
+            <CardContent className="p-0 flex flex-col">
+              <div className="max-h-[360px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border-light [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-border">
+                {cityActivity.length === 0 ? (
+                  <p className="px-5 py-4 text-sm text-text-muted">Sin actividad reciente.</p>
+                ) : (
+                  cityActivity.map((act, i) => {
+                    const upvotes = act.upvotesCount || 0;
+                    const downvotes = act.downvotesCount || 0;
+                    const dist = getDistance(userLoc?.lat, userLoc?.lng, act.latitude || act.lat, act.longitude || act.lng);
+                    return (
+                    <div
+                      key={act.id}
+                      className={`px-5 py-4 flex items-start gap-3 ${i < cityActivity.length - 1 ? 'border-b border-border-light' : ''} hover:bg-muted/50 transition-colors`}
+                    >
+                      <div className={`h-2.5 w-2.5 mt-1 rounded-full flex-shrink-0 shadow-sm ${act.priority === 'critical' ? 'bg-danger shadow-danger/40' : act.status === 'verified' ? 'bg-success shadow-success/40' : 'bg-warning shadow-warning/40'}`} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start gap-2 mb-1">
+                          <p className="text-sm font-semibold text-text-primary truncate">{act.title || act.category}</p>
+                          <Badge variant={act.priority === 'critical' ? 'danger' : 'warning'} className="text-[10px] py-0 px-1.5 h-4.5 flex-shrink-0 border-none font-bold">
+                            {act.status === 'verified' ? 'Verificado' : 'Pendiente'}
+                          </Badge>
+                        </div>
+                        
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5">
+                          <p className="text-xs text-text-muted flex items-center gap-1 font-medium">
+                            <Clock className="h-3 w-3" /> {getRelativeTime(act.createdAt)}
                           </p>
-                        )}
-                        {(upvotes > 0 || downvotes > 0) && (
-                          <div className="flex items-center gap-2 text-[10px] font-bold bg-secondary-bg px-2 py-0.5 rounded-full border border-border">
-                            {upvotes > 0 && <span className="text-success flex items-center gap-1"><ThumbsUp className="h-2.5 w-2.5" /> {upvotes}</span>}
-                            {downvotes > 0 && <span className="text-danger flex items-center gap-1"><ThumbsDown className="h-2.5 w-2.5" /> {downvotes}</span>}
-                          </div>
-                        )}
+                          {dist && (
+                            <p className="text-xs text-text-muted flex items-center gap-1">
+                              <MapPin className="h-3 w-3" /> a {dist} km
+                            </p>
+                          )}
+                          {(upvotes > 0 || downvotes > 0) && (
+                            <div className="flex items-center gap-2 text-[10px] font-bold bg-secondary-bg px-2 py-0.5 rounded-full border border-border">
+                              {upvotes > 0 && <span className="text-success flex items-center gap-1"><ThumbsUp className="h-2.5 w-2.5" /> {upvotes}</span>}
+                              {downvotes > 0 && <span className="text-danger flex items-center gap-1"><ThumbsDown className="h-2.5 w-2.5" /> {downvotes}</span>}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )})
-              )}
+                  )})
+                )}
+              </div>
+              <div className="p-3 border-t border-border-light bg-secondary-bg/30 rounded-b-[1.25rem]">
+                <Link to="/radar" className="block">
+                  <Button variant="ghost" className="w-full text-xs font-semibold text-text-secondary hover:text-primary transition-colors">
+                    Ver mapa completo →
+                  </Button>
+                </Link>
+              </div>
             </CardContent>
           </Card>
         </div>

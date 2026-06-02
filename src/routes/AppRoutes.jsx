@@ -76,6 +76,7 @@ const AppRoutes = () => {
         <Route path="map" element={<AdminMap />} />
         <Route path="notifications" element={<NotificationsPage />} />
         <Route path="profile" element={<ProfilePage />} />
+        <Route path="settings" element={<SettingsPage />} />
       </Route>
 
       <Route path="/citizen" element={<Navigate to="/dashboard" replace />} />
