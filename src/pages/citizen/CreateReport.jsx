@@ -60,8 +60,19 @@ const CreateReport = () => {
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState('');
   const [gpsActive, setGpsActive] = useState(false);
+  const [originalGps, setOriginalGps] = useState(null);
   const [files, setFiles] = useState([]);
   const [imagePreviewUrls, setImagePreviewUrls] = useState([]);
+
+  const getDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  };
 
   const [form, setForm] = useState({
     title: '',
@@ -97,7 +108,9 @@ const CreateReport = () => {
           latitude: pos.coords.latitude,
           longitude: pos.coords.longitude,
         }));
+        setOriginalGps({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         setGpsActive(true);
+        setError('');
       },
       () => setError('No se pudo obtener tu ubicación. Activa el GPS e intenta de nuevo.'),
       { enableHighAccuracy: true },
@@ -410,7 +423,17 @@ const CreateReport = () => {
                       }]}
                       centerOnUserLocation={false}
                       flyToOnCenterChange={false}
-                      onMapClick={(loc) => setForm((prev) => ({ ...prev, latitude: loc.latitude, longitude: loc.longitude }))}
+                      onMapClick={(loc) => {
+                        if (originalGps) {
+                          const dist = getDistance(originalGps.lat, originalGps.lng, loc.latitude, loc.longitude);
+                          if (dist > 10) {
+                            setError(`El reporte no puede estar a más de 10 km de tu ubicación actual (distancia: ${dist.toFixed(1)} km).`);
+                            return;
+                          }
+                        }
+                        setForm((prev) => ({ ...prev, latitude: loc.latitude, longitude: loc.longitude }));
+                        setError('');
+                      }}
                     />
                     <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20">
                       <span className="bg-black/70 text-white font-medium text-[11px] uppercase tracking-widest px-3 py-1.5 rounded-full backdrop-blur-md shadow-lg pointer-events-none">

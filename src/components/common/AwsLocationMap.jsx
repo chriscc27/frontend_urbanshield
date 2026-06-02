@@ -32,6 +32,8 @@ const AwsLocationMap = ({
   flyToOnCenterChange = true,
   onMapClick,
   onMarkerClick,
+  onMove,
+  onMoveEnd,
 }) => {
   const mapContainerRef = useRef(null);
   const mapRef = useRef(null);
@@ -106,6 +108,20 @@ const AwsLocationMap = ({
         userLocationMarkerRef.current = new maplibregl.Marker({ element: markerElement, anchor: 'center' })
           .setLngLat(resolvedCenter)
           .addTo(map);
+      }
+    });
+
+    map.on('move', () => {
+      if (typeof onMove === 'function') {
+        const center = map.getCenter();
+        onMove([center.lng, center.lat]);
+      }
+    });
+
+    map.on('moveend', () => {
+      if (typeof onMoveEnd === 'function') {
+        const center = map.getCenter();
+        onMoveEnd([center.lng, center.lat]);
       }
     });
 

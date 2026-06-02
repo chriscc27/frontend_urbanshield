@@ -168,7 +168,7 @@ const CitizenMap = () => {
   }), [filteredMarkers]);
 
   return (
-    <div className="relative h-full min-h-[calc(100vh-8rem)] w-full overflow-hidden bg-primary-bg rounded-3xl border border-border-light shadow-sm">
+    <div className="relative h-full w-full overflow-hidden bg-primary-bg">
 
       {/* Header Overlay */}
       <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-start pointer-events-none">
@@ -355,22 +355,24 @@ const CitizenMap = () => {
       </div>
 
       {/* Map */}
-      <AwsLocationMap
-        centerOnUserLocation={centerOnUser}
-        className="absolute inset-0"
-        center={mapCenter}
-        zoom={mapZoom}
-        markers={markerPoints}
-        showNavigation={false}
-        onMarkerClick={(markerData) => {
-          setSelectedReport(markerData);
-          setShowDetails(false);
-          setCenterOnUser(false);
-          if (markerData.lat != null && markerData.lng != null) {
-            setMapCenter([markerData.lng, markerData.lat]);
-          }
-        }}
-      />
+      <div className="absolute inset-0 z-0">
+        <AwsLocationMap
+          centerOnUserLocation={centerOnUser}
+          className="absolute inset-0"
+          center={mapCenter}
+          zoom={mapZoom}
+          markers={markerPoints}
+          showNavigation={false}
+          onMarkerClick={(markerData) => {
+            setSelectedReport(markerData);
+            setShowDetails(false);
+            setCenterOnUser(false);
+            if (markerData.lat != null && markerData.lng != null) {
+              setMapCenter([markerData.lng, markerData.lat]);
+            }
+          }}
+        />
+      </div>
 
       {/* Popup Validation UI */}
       <AnimatePresence>

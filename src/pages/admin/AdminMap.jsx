@@ -168,7 +168,7 @@ const CitizenMap = () => {
   }), [filteredMarkers]);
 
   return (
-    <div className="relative h-full min-h-[calc(100vh-8rem)] w-full overflow-hidden bg-primary-bg rounded-3xl border border-border-light shadow-sm">
+    <div className="relative h-full w-full overflow-hidden bg-primary-bg">
 
       {/* Header Overlay */}
       <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-start pointer-events-none">
