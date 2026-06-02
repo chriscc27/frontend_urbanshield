@@ -10,8 +10,7 @@ const adminLinks = [
   { path: '/admin/reports', label: 'Gestión de Reportes', icon: FileText, exact: false },
   { path: '/admin/history', label: 'Historial de Reportes', icon: FileText, exact: false },
   { path: '/admin/map', label: 'Mapa de Monitoreo', icon: Map, exact: false },
-  { path: '/admin/inbox', label: 'Bandeja de Soporte', icon: Inbox, exact: false },
-  { path: '/admin/settings', label: 'Configuración Sistema', icon: Settings, exact: false },
+  { path: '/admin/settings', label: 'Configuración', icon: Settings, exact: false },
 ];
 
 const pageTitles = {
@@ -19,8 +18,7 @@ const pageTitles = {
   '/admin/reports': 'Gestión de Emergencias',
   '/admin/history': 'Historial de Reportes',
   '/admin/map': 'Monitoreo en Tiempo Real',
-  '/admin/inbox': 'Bandeja de Soporte',
-  '/admin/settings': 'Configuración del Sistema',
+  '/admin/settings': 'Configuración',
 };
 
 const AdminLayout = () => {
