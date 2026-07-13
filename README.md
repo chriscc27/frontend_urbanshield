@@ -1,6 +1,6 @@
 # 🛡️ UrbanShield - Frontend
 
-![UrbanShield Cover](https://via.placeholder.com/1200x400?text=UrbanShield+Smart-City+Platform)
+![UrbanShield Cover](https://placehold.co/1200x400/2563eb/ffffff?text=UrbanShield+Smart-City+Platform)
 
 > **UrbanShield** is a citizen platform designed for reporting urban incidents and emergencies in real-time, connecting citizens with city administrators through interactive maps and detailed reports.
 
